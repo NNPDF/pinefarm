@@ -1,0 +1,5 @@
+.prefix/
+results/
+# madgraph junk
+py.py
+additional_command
