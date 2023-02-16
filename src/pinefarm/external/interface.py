@@ -57,7 +57,7 @@ class External(abc.ABC):
 
     def update_with_tmp(self):
         """Move intermediate grid to final position."""
-        shutil.move(self.gridtmp, self.grid)
+        shutil.move(str(self.gridtmp), str(self.grid))
 
     @staticmethod
     def install():

@@ -72,7 +72,7 @@ def mg5amc():
     if len(content) == 1:
         # in case, remove the intermediate layer
         for el in content[0].iterdir():
-            shutil.move(el, dest)
+            shutil.move(str(el), str(dest))
         content[0].rmdir()
 
     # in case we're using python3, we need to convert the model file

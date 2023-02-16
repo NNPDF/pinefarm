@@ -70,7 +70,7 @@ def main(grids):
     tools.update_grid_metadata(
         mgrid_path, mgridtmp, entries={"results": "\n".join(tmpresults)}
     )
-    shutil.move(str(mgridtmp), mgrid_path)
+    shutil.move(str(mgridtmp), str(mgrid_path))
 
     mkeys = mgrid.key_values()
     for key in keys:
