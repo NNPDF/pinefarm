@@ -143,7 +143,7 @@ def run_apidoc(_):
 
     # analyse 'pineappl'
     docs_dest = here / "modules" / "pinefarm"
-    package = here.parents[1] / "pinefarm"
+    package = here.parents[1] / "src" / "pinefarm"
     main(["--module-first", "-o", str(docs_dest), str(package)])
     (docs_dest / "modules.rst").unlink()
 
