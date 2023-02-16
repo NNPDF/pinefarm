@@ -36,6 +36,6 @@ def main(datasets):
         tools.update_grid_metadata(path, dest, entries)
         compressed = tools.compress(dest)
         dest.unlink()
-        shutil.move(compressed, path)
+        shutil.move(str(compressed), str(path))
 
         rich.print(f"'{path}'\n\tgrid metadata updated")
