@@ -13,7 +13,7 @@ from . import paths
 
 URL = "https://launchpad.net/mg5amcnlo/{major}.0/{major}.{minor}.x/+download/MG5_aMC_v{version}.tar.gz"
 "URL template for MG5aMC\\@NLO release"
-VERSION = "3.4.1"
+VERSION = "3.4.2"
 "Version in use"
 CONVERT_MODEL = """
 set auto_convert_model True
