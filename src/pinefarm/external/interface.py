@@ -112,7 +112,7 @@ class External(abc.ABC):
         # other python dependencies versions
         versions["pinefarm"] = __version__
         versions["pinecard"] = pygit2.Repository(
-            configs.configs["paths"]["root"]
+            configs.configs["paths"]["runcards"]
         ).describe(
             always_use_long_format=True,
             describe_strategy=pygit2.GIT_DESCRIBE_TAGS,
