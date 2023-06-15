@@ -106,7 +106,7 @@ class External(abc.ABC):
 
         """
 
-    def load_pinecard(self) -> bytes:
+    def load_pinecard(self) -> str:
         """Load directory as b64encoded .tar.gz file"""
         # shutils wants to create a true file, so we go through a temp dir
         with tempfile.TemporaryDirectory() as tmpdirname:
