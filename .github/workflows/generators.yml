@@ -25,7 +25,10 @@ jobs:
           poetry install --no-interaction
       - name: Get pinecards
         run: |
-          cd examples && git clone git@github.com:NNPDF/pinecards.git
+          cd examples
+          # https://github.com/actions/checkout/issues/24
+          git config --global url.https://github.com/.insteadOf git://github.com/
+          git clone https://github.com/NNPDF/pinecards.git
       - name: Execute all generators
         run: |
           # positivity
