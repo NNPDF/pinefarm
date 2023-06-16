@@ -26,7 +26,7 @@ jobs:
       - name: Get pinecards
         uses: actions/checkout@v2
         with:
-          repository: pinecards
+          repository: NNPDF/pinecards
       - name: Overwrite config
         run: |
           cp benchmarks/data/pinefarm.toml .
