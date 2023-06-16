@@ -1,3 +1,4 @@
+"""Auxilariy tools."""
 import datetime
 import itertools
 import subprocess
@@ -182,7 +183,7 @@ def update_grid_metadata(input_file, output_file, entries=None, entries_from_fil
 
 
 def set_grid_metadata(grid, entries=None, entries_from_file=None):
-    """Set metadata on a pineappl grid (in-place operation)
+    """Set metadata on a pineappl grid (in-place operation).
 
     Parameters
     ----------
@@ -209,7 +210,7 @@ def set_grid_metadata(grid, entries=None, entries_from_file=None):
 
 
 def common_substring(s1, s2, *sn):
-    """Return the longest common part of two iterables, starting from the begininng
+    """Return the longest common part of two iterables, starting from the begininng.
 
     Parameters
     ----------
