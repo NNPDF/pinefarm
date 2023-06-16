@@ -32,11 +32,11 @@ jobs:
           path: examples/
       - name: Execute all generators
         run: |
+          echo $PWD
+          echo $GITHUB_WORKSPACE
           ls -l
           ls -l examples/
-          ls -l ../
-          # ls -l examples/pinecards
-          ls -l pinecards/
+          ls -l examples/pinecards
           mv examples/pinecards/* examples/
           # positivity
           pinefarm run NNPDF_POS_F2U_40 benchmarks/data/401.yaml
