@@ -29,12 +29,13 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: NNPDF/pinecards
-          path: pinefarm/examples/
+          # path: pinefarm/examples/
       - name: Execute all generators
         run: |
           ls -l
           ls -l examples/
-          ls -l examples/pinecards
+          ls -l ../
+          # ls -l examples/pinecards
           ls -l pinecards/
           mv examples/pinecards/* examples/
           # positivity
