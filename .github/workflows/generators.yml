@@ -31,6 +31,9 @@ jobs:
           git clone https://github.com/NNPDF/pinecards.git
       - name: Execute all generators
         run: |
+          ls -l examples
+          ls -l examples/pinecards
+          python -c "import pathlib; from pinefarm import configs,info; configs.configs = {'paths':{'runcards': pathlib.Path('../pinecards')}}; print(info.label('NNPDF_POS_F2U_40'))"
           # positivity
           pinefarm run NNPDF_POS_F2U_40 .github/bench_data/401.yaml
           # yadism
