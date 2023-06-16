@@ -1,3 +1,4 @@
+"""Inspect runcards."""
 import pathlib
 
 import click
@@ -53,5 +54,4 @@ def runcards(datasets, metadata, kind):
 @subcommand.command("configs")
 def subconfigs():
     """Inspect loaded configs."""
-
     rich.print_json(data=configs.raw(configs.configs))

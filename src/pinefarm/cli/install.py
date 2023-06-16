@@ -1,3 +1,4 @@
+"""Install utilities."""
 import click
 
 from .. import install

@@ -1,3 +1,4 @@
+"""Merge multiple PineAPPL grids into a single one."""
 import itertools
 import pathlib
 import re
@@ -15,11 +16,11 @@ from ._base import command
 @click.argument("grids", nargs=-1)
 def subcommand(grids):
     """Merge multiple PineAPPL grids into a single one."""
-
     main(grids)
 
 
 def main(grids):
+    """Merge multiple PineAPPL grids into a single one."""
     if len(grids) < 2:
         raise ValueError("At least 2 grids needed for a merge.")
 

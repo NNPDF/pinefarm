@@ -1,3 +1,4 @@
+"""Update datasets metadata."""
 import pathlib
 import shutil
 
@@ -20,6 +21,7 @@ def subcommand(datasets):
 
 
 def main(datasets):
+    """Update datasets metadata."""
     for path in datasets:
         path = pathlib.Path(path)
         dataset = path.stem
