@@ -1,5 +1,5 @@
+"""Comparison tools."""
 import inspect
-import itertools
 
 import lhapdf
 import more_itertools

@@ -1,3 +1,4 @@
+"""Provide inspection tools."""
 import dataclasses
 import enum
 import typing
@@ -6,6 +7,8 @@ from .external import integrability, interface, mg5, positivity, vrap, yad
 
 
 class Kind(enum.Enum):
+    """Interface types."""
+
     dis = enum.auto()
     positivity = enum.auto()
     ftdy = enum.auto()
@@ -15,12 +18,15 @@ class Kind(enum.Enum):
 
 @dataclasses.dataclass
 class Info:
+    """Info type."""
+
     color: str
     external: typing.Type[interface.External]
     kind: Kind
 
 
 def label(dataset: str) -> Info:
+    """Generate associated Info type."""
     if yad.is_dis(dataset):
         return Info(color="red", external=yad.Yadism, kind=Kind.dis)
     if positivity.is_positivity(dataset):

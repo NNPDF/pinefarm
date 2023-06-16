@@ -1,3 +1,4 @@
+"""Madgraph interface."""
 import json
 import re
 import subprocess
@@ -30,6 +31,8 @@ def url():
 
 
 class Mg5(interface.External):
+    """Interface provider."""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -39,18 +42,22 @@ class Mg5(interface.External):
 
     @property
     def mg5_dir(self):
+        """Return output dir."""
         return self.dest / self.name
 
     @staticmethod
     def install():
+        """Execute installer."""
         install.pineappl()
         install.mg5amc()
 
     @property
     def pdf_id(self):
+        """Convert PDF to SetIndex."""
         return lhapdf.mkPDF(self.pdf).info().get_entry("SetIndex")
 
     def run(self):
+        """Execute program."""
         # copy the output file to the directory and replace the variables
         output = (self.source / "output.txt").read_text().replace("@OUTPUT@", self.name)
         output_file = self.dest / "output.txt"
@@ -161,6 +168,7 @@ class Mg5(interface.External):
         )
 
     def generate_pineappl(self):
+        """Generate grid."""
         # if rerunning without regenerating, let's remove the already merged
         # grid (it will be soon reobtained)
         if self.timestamp is not None:
@@ -200,6 +208,7 @@ class Mg5(interface.External):
         grid.write(str(self.grid))
 
     def results(self):
+        """Collect PDF results."""
         madatnlo = next(
             iter(self.mg5_dir.glob("Events/run_01*/MADatNLO.HwU"))
         ).read_text()
@@ -219,6 +228,7 @@ class Mg5(interface.External):
         return df
 
     def collect_versions(self):
+        """Add versions."""
         versions = {}
         versions["mg5amc_revno"] = (
             subprocess.run(
@@ -247,6 +257,7 @@ class Mg5(interface.External):
 
 
 def find_marker_position(insertion_marker, contents):
+    """Find in file."""
     marker_pos = -1
 
     for lineno, value in enumerate(contents):
@@ -263,7 +274,7 @@ def find_marker_position(insertion_marker, contents):
 
 
 def apply_user_cuts(cuts_file, user_cuts):
-    """Apply a user defined cut, patching a suitable cuts file"""
+    """Apply a user defined cut, patching a suitable cuts file."""
     with open(cuts_file) as fd:
         contents = fd.readlines()
 

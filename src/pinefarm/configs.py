@@ -1,3 +1,4 @@
+"""Configuration tools."""
 import copy
 import os
 import pathlib
@@ -10,13 +11,13 @@ import appdirs
 import tomli
 
 NAME = "pinefarm.toml"
-"""Name of the config while (wherever it is placed)"""
+"""Name of the config while (wherever it is placed)."""
 
 PATHS_SECTIONS = ("paths", "commands")
-"""Sections containing only paths"""
+"""Sections containing only paths."""
 
 configs = {}
-"Holds loaded configurations"
+"""Holds loaded configurations."""
 
 
 def detect(path: Optional[os.PathLike] = None) -> pathlib.Path:

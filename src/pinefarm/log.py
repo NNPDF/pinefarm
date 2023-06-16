@@ -1,10 +1,11 @@
+"""Logging tools."""
 import pathlib
 import subprocess as sp
 import sys
 
 
 class WhileRedirectedError(RuntimeError):
-    """Error to signal a generic error, while stderr was redirected to file
+    """Error to signal a generic error, while stderr was redirected to file.
 
     Parameters
     ----------
@@ -23,10 +24,13 @@ class WhileRedirectedError(RuntimeError):
 
 
 class ChildStream:
+    """Inner stream."""
+
     def __init__(self, parent):
         self.parent = parent
 
     def write(self, data):
+        """Write to stream."""
         self.parent.write(data, self)
 
     def __getattribute__(self, name):
@@ -36,7 +40,7 @@ class ChildStream:
 
 
 class Tee:
-    """Context manager to tee stdout to file
+    """Context manager to tee stdout to file.
 
     Parameters
     ----------
@@ -69,6 +73,7 @@ class Tee:
         self.file.close()
 
     def write(self, data, stream):
+        """Write to stream."""
         self.file.write(data)
         if stream is self.stdout:
             self.stdout_bk.write(data)
@@ -76,6 +81,7 @@ class Tee:
             self.stderr_bk.write(data)
 
     def flush(self):
+        """Flush stream."""
         self.file.flush()
 
     def __getattribute__(self, name):
@@ -92,7 +98,7 @@ class Tee:
 
 
 def subprocess(*args, cwd, out):
-    """Wrapper to :class:`subprocess.Popen` to print the output to screen and capture it.
+    """Wrap :class:`subprocess.Popen` to print the output to screen and capture it.
 
     Parameters
     ----------
