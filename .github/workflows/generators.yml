@@ -24,7 +24,7 @@ jobs:
           installer-parallel: true
       - name: Install non-Python dependencies
         run: |
-          apt install pkg-config
+          apt install -y pkg-config
       - name: Install project
         run: |
           poetry install --no-interaction
