@@ -34,6 +34,9 @@ jobs:
         with:
           repository: NNPDF/pinecards
           path: examples/
+      - name: Set up PDFs storage
+        run: |
+          lhapdf update
       - name: Execute all generators
         run: |
           # positivity
