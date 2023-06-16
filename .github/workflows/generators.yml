@@ -32,7 +32,6 @@ jobs:
           path: examples/
       - name: Execute all generators
         run: |
-          ls -l examples/
           # positivity
           pinefarm run NNPDF_POS_F2U_40 benchmarks/data/401.yaml
           # yadism
