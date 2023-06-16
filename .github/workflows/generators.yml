@@ -24,6 +24,7 @@ jobs:
           installer-parallel: true
       - name: Install non-Python dependencies
         run: |
+          apt update
           apt install -y pkg-config
       - name: Install project
         run: |
