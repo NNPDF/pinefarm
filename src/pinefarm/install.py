@@ -182,6 +182,7 @@ def pineappl(capi=True, cli=False):
         whether `pineappl` and  `pineappl_capi` are now available.
 
     """
+
     # define availability condition
     def installed():
         return pkgconfig.exists("pineappl_capi")
@@ -294,6 +295,7 @@ def lhapdf():
         - for `mg5`, since it's vendored
         - for `yadism`, since we depend on the PyPI version
     """
+
     # define availability condition
     def installed():
         try:
@@ -320,7 +322,6 @@ def lhapdf():
             f.write(r.content)
 
     with tarfile.open(lhapdf_tar, "r:gz") as tar:
-
         tar.extractall(lhapdf_dest)
 
     env = os.environ.copy()

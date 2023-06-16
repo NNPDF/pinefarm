@@ -1,12 +1,12 @@
 import abc
+import base64
 import os
+import pathlib
 import shutil
 import subprocess
+import tempfile
 
 import pineappl
-import tempfile
-import pathlib
-import base64
 
 from .. import __version__, configs, tools
 
@@ -112,8 +112,8 @@ class External(abc.ABC):
         with tempfile.TemporaryDirectory() as tmpdirname:
             p = pathlib.Path(tmpdirname) / "pinecard"
             shutil.make_archive(p, format="gztar", root_dir=self.source)
-            with open(p.with_suffix(".tar.gz"),"rb") as fd:
-                return base64.b64encode(fd.read()).decode('ascii')
+            with open(p.with_suffix(".tar.gz"), "rb") as fd:
+                return base64.b64encode(fd.read()).decode("ascii")
 
     def annotate_versions(self):
         """Add version informations as meta data."""
