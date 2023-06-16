@@ -3,7 +3,10 @@ import os
 import shutil
 import subprocess
 
-import pygit2
+import pineappl
+import tempfile
+import pathlib
+import base64
 
 from .. import __version__, configs, tools
 
@@ -103,6 +106,15 @@ class External(abc.ABC):
 
         """
 
+    def load_pinecard(self) -> str:
+        """Load directory as b64encoded .tar.gz file"""
+        # shutils wants to create a true file, so we go through a temp dir
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            p = pathlib.Path(tmpdirname) / "pinecard"
+            shutil.make_archive(p, format="gztar", root_dir=self.source)
+            with open(p.with_suffix(".tar.gz"),"rb") as fd:
+                return base64.b64encode(fd.read()).decode('ascii')
+
     def annotate_versions(self):
         """Add version informations as meta data."""
         results_log = self.dest / "results.log"
@@ -111,17 +123,8 @@ class External(abc.ABC):
         # the pinefarm version will also pin pineappl_py version and all the
         # other python dependencies versions
         versions["pinefarm"] = __version__
-        versions["pinecard"] = pygit2.Repository(
-            configs.configs["paths"]["root"]
-        ).describe(
-            always_use_long_format=True,
-            describe_strategy=pygit2.GIT_DESCRIBE_TAGS,
-            dirty_suffix="-dirty",
-            show_commit_oid_as_fallback=True,
-        )
-        # TODO: add pineappl version
-        #  pineappl = configs.configs["commands"]["pineappl"]()
-        versions["pineappl_capi"] = "???"
+        versions["pinecard"] = self.load_pinecard()
+        versions["pineappl"] = pineappl.__version__
 
         entries = {}
         entries.update(versions)
