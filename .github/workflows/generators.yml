@@ -27,6 +27,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: pinecards
+          path: examples/
       - name: Overwrite config
         run: |
           cp benchmarks/data/pinefarm.toml .
