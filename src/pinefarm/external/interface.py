@@ -1,3 +1,4 @@
+"""Abstract interface."""
 import abc
 import base64
 import os
@@ -12,19 +13,18 @@ from .. import __version__, configs, tools
 
 
 class External(abc.ABC):
-    """
-    Interface class for external providers.
+    """Interface class for external providers.
 
     Parameters
     ----------
-        name : str
-            dataset name
-        theory : dict
-            theory dictionary
-        pdf : str
-            PDF name
-        timestamp : str
-            timestamp of already generated output folder
+    name : str
+        dataset name
+    theory : dict
+        theory dictionary
+    pdf : str
+        PDF name
+    timestamp : str
+        timestamp of already generated output folder
 
     """
 
@@ -107,7 +107,7 @@ class External(abc.ABC):
         """
 
     def load_pinecard(self) -> str:
-        """Load directory as b64encoded .tar.gz file"""
+        """Load directory as b64encoded .tar.gz file."""
         # shutils wants to create a true file, so we go through a temp dir
         with tempfile.TemporaryDirectory() as tmpdirname:
             p = pathlib.Path(tmpdirname) / "pinecard"

@@ -1,3 +1,4 @@
+"""Positivity interface."""
 import json
 
 import lhapdf
@@ -10,31 +11,26 @@ from .. import configs
 from . import interface
 
 
-def is_positivity(name):
-    """
-    Is this a positivity dataset?
-
-    The decision is based on the existance of the `positivity.yaml` file.
-
-    Parameters
-    ----------
-        name : str
-            dataset name
-    """
+def is_positivity(name: str) -> bool:
+    """Determine whether this a positivity dataset."""
     return (configs.configs["paths"]["runcards"] / name / "positivity.yaml").exists()
 
 
 class Positivity(interface.External):
+    """Interface provider."""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     def run(self):
+        """Open configuration."""
         with open(
             configs.configs["paths"]["runcards"] / self.name / "positivity.yaml"
         ) as o:
             self.runcard = yaml.safe_load(o)
 
     def generate_pineappl(self):
+        """Generate grid."""
         self.xgrid = self.runcard["xgrid"]
         self.lepton_pid = self.runcard["lepton_pid"]
         self.pid = self.runcard["pid"]
@@ -81,6 +77,7 @@ class Positivity(interface.External):
         grid.write(str(self.grid))
 
     def results(self):
+        """Apply PDF to grid."""
         pdf = lhapdf.mkPDF(self.pdf)
         d = {
             "result": [pdf.xfxQ2(self.pid, x, self.q2) for x in self.xgrid],
@@ -111,4 +108,5 @@ class Positivity(interface.External):
         return results
 
     def collect_versions(self):
+        """No additional programs involved."""
         return {}

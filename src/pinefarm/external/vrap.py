@@ -1,17 +1,16 @@
-"""
-    Runner for vrap producing pineappl grids
+"""Runner for vrap producing pineappl grids.
 
-    Uses a modified version of vrap https://github.com/NNPDF/hawaiian_vrap
-    which produces pineappl grids. It has been tested for FT DY kinematics
+Uses a modified version of vrap https://github.com/NNPDF/hawaiian_vrap
+which produces pineappl grids. It has been tested for FT DY kinematics
 
-    A ``vrap`` dataset includes a single ``vrap.yaml`` file which defines
-    how ``vrap`` will be run.
-    A dataset can include many kinematic files (min. 1), ``vrap`` will be run
-    once per kinematic file.
-    Vrap datatasets can also include ``cfactors`` which need to match the name
-    of the kinematic files and will be applied to the corresponding run
-    ex: if the kinematic file is call "906_bin0.dat" the corresponding cfactors
-        are "ACC_906_bin0.dat" and "QCD_906_bin0.dat"
+A ``vrap`` dataset includes a single ``vrap.yaml`` file which defines
+how ``vrap`` will be run.
+A dataset can include many kinematic files (min. 1), ``vrap`` will be run
+once per kinematic file.
+Vrap datatasets can also include ``cfactors`` which need to match the name
+of the kinematic files and will be applied to the corresponding run
+ex: if the kinematic file is call "906_bin0.dat" the corresponding cfactors
+    are "ACC_906_bin0.dat" and "QCD_906_bin0.dat"
 """
 import subprocess as sp
 import tempfile
@@ -37,17 +36,13 @@ _POSITIVITY_PDFS = {
 }
 
 
-def is_vrap(name):
-    """
-    Checks whether this is a dataset to be run with vrap
-    """
+def is_vrap(name: str) -> bool:
+    """Check whether this is a dataset to be run with vrap."""
     return (configs.configs["paths"]["runcards"] / name / "vrap.yaml").exists()
 
 
 def yaml_to_vrapcard(yaml_dict, pdf, output_file, order="NLO"):
-    """
-    Converts the dictionary from `vrap.yaml` file into a vrap runcard
-    """
+    """Convert the dictionary from `vrap.yaml` file into a vrap runcard."""
     input_yaml = dict(yaml_dict)
     # Load the run-specific options
     input_yaml["PDFfile"] = f"{pdf}.LHgrid"
@@ -63,9 +58,7 @@ def yaml_to_vrapcard(yaml_dict, pdf, output_file, order="NLO"):
 
 
 def gen_pos_pdf(pdfname, base_pdf="NNPDF40_nnlo_as_01180"):
-    """
-    Generate ``pdfname`` according to the rules in _POSITIVITY_PDFS
-    """
+    """Generate ``pdfname`` according to the rules in _POSITIVITY_PDFS."""
     # If the pdfname does not exist, generate it
     if not (environment.datapath / pdfname).exists():
         pdflabels = _POSITIVITY_PDFS[pdfname]
@@ -73,6 +66,8 @@ def gen_pos_pdf(pdfname, base_pdf="NNPDF40_nnlo_as_01180"):
 
 
 class Vrap(interface.External):
+    """Interface provider."""
+
     def __init__(self, pinecard, theorycard, *args, **kwargs):
         super().__init__(pinecard, theorycard, *args, **kwargs)
 
@@ -131,10 +126,12 @@ class Vrap(interface.External):
         self._partial_results = []
 
     def run(self):
-        """Run vrap for the given runcards
+        """Run vrap for the given runcards.
+
         After running vrap, the resulting grid will be optimized, cfactors
         (for instance, ACCEPTANCE factors) applied.
-        The MC results for each run (writen to results.out) will be read
+        The MC results for each run (writen to results.out) will be read.
+
         """
         for b, kin_card in enumerate(self._kin_cards):
             sp.run(
@@ -175,7 +172,7 @@ class Vrap(interface.External):
             self._partial_results.append((cv, stat))
 
     def generate_pineappl(self):
-        """If the run contain more than one grid, merge them all"""
+        """If the run contain more than one grid, merge them all."""
         if len(self._partial_grids) > 1:
             # Use the first subgrid as main grid
             main_grid = Grid.read(self._partial_grids[0].as_posix())
@@ -193,9 +190,7 @@ class Vrap(interface.External):
             main_grid.write(self.grid)
 
     def results(self):
-        """Combines the results of the partial runs of vrap
-        in order to compare with the generated grid
-        """
+        """Combinesthe results of the partial runs of vrap in order to compare with the generated grid."""
         cv, stat_errors = zip(*self._partial_results)
         final_cv = np.sum(cv, axis=0)
         final_stat = np.sqrt(np.sum(np.power(stat_errors, 2), axis=0))
@@ -210,7 +205,7 @@ class Vrap(interface.External):
         return pd.DataFrame(data=d)
 
     def collect_versions(self):
-        """Currently the version is defined by this file"""
+        """Add the version defined by this file."""
         vrap_run = sp.run(
             [configs.configs["commands"]["vrap"], "--version"],
             capture_output=True,
@@ -221,4 +216,5 @@ class Vrap(interface.External):
 
     @staticmethod
     def install():
+        """Execute installer."""
         install.hawaiian_vrap()
