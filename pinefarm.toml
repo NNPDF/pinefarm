@@ -7,7 +7,7 @@
 
 [paths]
 # paths relative to the location of this file
-runcards = "pinecards"
+runcards = "examples"
 results = "results"
 # theories = "theories"
 # prefix = ".prefix"

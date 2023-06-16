@@ -29,8 +29,7 @@ jobs:
           repository: NNPDF/pinecards
       - name: Execute all generators
         run: |
-          ls pinecards
-          python -c "import pathlib; from pinefarm import configs,info; configs.configs = {'paths':{'runcards': pathlib.Path('./pinecards')}}; print(info.label('NNPDF_POS_F2U_40'))"
+          mv pinecards/* examples/
           # positivity
           pinefarm run NNPDF_POS_F2U_40 benchmarks/data/401.yaml
           # yadism
