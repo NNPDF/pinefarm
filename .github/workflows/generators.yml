@@ -1,6 +1,8 @@
 name: generators
 
-on: workflow_dispatch
+on:
+  push:
+  workflow_dispatch:
 
 jobs:
   generators:
@@ -27,7 +29,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: NNPDF/pinecards
-          path: examples/
+          path: pinefarm/examples/
       - name: Execute all generators
         run: |
           ls -l
