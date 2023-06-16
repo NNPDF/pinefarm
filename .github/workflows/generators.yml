@@ -27,9 +27,6 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: NNPDF/pinecards
-      - name: Overwrite config
-        run: |
-          cp benchmarks/data/pinefarm.toml .
       - name: Execute all generators
         run: |
           ls -l examples
