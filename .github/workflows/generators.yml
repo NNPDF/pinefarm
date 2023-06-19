@@ -25,7 +25,7 @@ jobs:
       - name: Install non-Python dependencies
         run: |
           apt update
-          apt install -y pkg-config autoconf libtool gcc make
+          apt install -y pkg-config autoconf libtool gcc g++ make
       - name: Install project
         run: |
           poetry install --no-interaction

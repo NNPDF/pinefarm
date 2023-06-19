@@ -210,7 +210,9 @@ def pineappl(capi=True, cli=False):
             )
 
         cargo_exe = cargo()
-        subprocess.run([cargo_exe] + "install --force cargo-c".split())
+        subprocess.run(
+            [cargo_exe] + "install --force cargo-c --features=vendored-openssl".split()
+        )
 
         subprocess.run(
             [cargo_exe]
