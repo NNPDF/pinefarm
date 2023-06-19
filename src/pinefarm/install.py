@@ -258,7 +258,7 @@ def lhapdf_conf(pdf):
         LHAPDF name of the required PDF
 
     """
-    if os.environ("CI"):
+    if os.environ["CI"]:
         return
     if shutil.which("lhapdf-config") is not None or pkgconfig.exists("lhapdf"):
         lhapdf_data = pathlib.Path(
