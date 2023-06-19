@@ -46,4 +46,6 @@ jobs:
           # integrability
           pinefarm run NNPDF_INTEG_XT3_40 benchmarks/data/401.yaml
           # yadism
-          pinefarm run HERA_CC_318GEV_EM_SIGMARED .github/bench_data/401.yaml
+          pinefarm run HERA_CC_318GEV_EM_SIGMARED benchmarks/data/401.yaml
+          # vrap
+          pinefarm run DYE605 benchmarks/data/401.yaml
