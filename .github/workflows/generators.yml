@@ -48,13 +48,10 @@ jobs:
           # yadism
           # pinefarm run HERA_CC_318GEV_EM_SIGMARED benchmarks/data/401.yaml
           # vrap
-          ls /usr/include
-          ls /usr/local/include
+          echo "$HOME"
           ls -la $HOME
           echo "$CPATH"
-          ls $HOME/.local
-          ls $HOME/.local/include
-          export CPATH=$HOME/.local/include/:$CPATH
-          echo "$CPATH"
           echo $LD_LIBRARY_PATH
+          find . -name LHAPDF.h 2>/dev/null
+          ls /home
           pinefarm run DYE605 benchmarks/data/401.yaml
