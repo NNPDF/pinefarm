@@ -37,14 +37,11 @@ jobs:
       - name: Set up PDFs storage
         run: |
           lhapdf update
-          ls /usr/local/share/
+          ls /usr/local/share/LHAPDF/
       - name: Execute all generators
         env:
           LHAPDF_DATA_PATH: /usr/local/share/LHAPDF/
         run: |
-          echo "$LHAPDF_DATA_PATH"
-          python -c "import os; print(os.environ)"
-          ls /usr/local/share
           # positivity
           pinefarm run NNPDF_POS_F2U_40 benchmarks/data/401.yaml
           # yadism
