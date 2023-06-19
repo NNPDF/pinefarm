@@ -258,6 +258,9 @@ def lhapdf_conf(pdf):
         LHAPDF name of the required PDF
 
     """
+    # user settings *always* take precedence
+    if os.environ["LHAPDF_DATA_PATH"]:
+        return
     if shutil.which("lhapdf-config") is not None or pkgconfig.exists("lhapdf"):
         lhapdf_data = pathlib.Path(
             subprocess.run("lhapdf-config --datadir".split(), capture_output=True)
