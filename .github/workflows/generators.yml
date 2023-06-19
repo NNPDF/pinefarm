@@ -39,6 +39,7 @@ jobs:
           lhapdf update
       - name: Execute all generators
         run: |
+          export LHAPDF_DATA_PATH=/usr/local/share/LHAPDF/
           # positivity
           pinefarm run NNPDF_POS_F2U_40 benchmarks/data/401.yaml
           # yadism
