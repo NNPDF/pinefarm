@@ -37,12 +37,13 @@ jobs:
       - name: Set up PDFs storage
         run: |
           lhapdf update
-          ls /usr/local/share/LHAPDF/
       - name: Execute all generators
         env:
           LHAPDF_DATA_PATH: /usr/local/share/LHAPDF/
         run: |
           # positivity
           pinefarm run NNPDF_POS_F2U_40 benchmarks/data/401.yaml
+          # integrability
+          pinefarm run NNPDF_INTEG_XT3_40 benchmarks/data/401.yaml
           # yadism
-          # pinefarm run HERA_CC_318GEV_EM_SIGMARED .github/bench_data/401.yaml
+          pinefarm run HERA_CC_318GEV_EM_SIGMARED .github/bench_data/401.yaml
