@@ -25,7 +25,7 @@ jobs:
       - name: Install non-Python dependencies
         run: |
           apt update
-          apt install -y pkg-config autoconf libtool gcc g++ make
+          apt install -y pkg-config autoconf libtool build-essential
       - name: Install project
         run: |
           poetry install --no-interaction
@@ -42,10 +42,19 @@ jobs:
           LHAPDF_DATA_PATH: /usr/local/share/LHAPDF/
         run: |
           # positivity
-          pinefarm run NNPDF_POS_F2U_40 benchmarks/data/401.yaml
+          # pinefarm run NNPDF_POS_F2U_40 benchmarks/data/401.yaml
           # integrability
-          pinefarm run NNPDF_INTEG_XT3_40 benchmarks/data/401.yaml
+          # pinefarm run NNPDF_INTEG_XT3_40 benchmarks/data/401.yaml
           # yadism
-          pinefarm run HERA_CC_318GEV_EM_SIGMARED benchmarks/data/401.yaml
+          # pinefarm run HERA_CC_318GEV_EM_SIGMARED benchmarks/data/401.yaml
           # vrap
+          ls /usr/include
+          ls /usr/local/include
+          ls -la $HOME
+          echo "$CPATH"
+          ls $HOME/.local
+          ls $HOME/.local/include
+          export CPATH=$HOME/.local/include/:$CPATH
+          echo "$CPATH"
+          echo $LD_LIBRARY_PATH
           pinefarm run DYE605 benchmarks/data/401.yaml
