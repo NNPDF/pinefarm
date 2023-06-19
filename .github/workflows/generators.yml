@@ -36,13 +36,8 @@ jobs:
           path: examples/
       - name: Set up PDFs storage
         run: |
-          lhapdf --help
-          lhapdf-config --help
-          lhapdf-config --datadir
-          lhapdf-config --prefix
-          ls $(lhapdf-config --datadir)
           lhapdf update
-          ls $(lhapdf-config --datadir)
+          ls /usr/local/share/
       - name: Execute all generators
         env:
           LHAPDF_DATA_PATH: /usr/local/share/LHAPDF/
