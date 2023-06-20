@@ -259,7 +259,7 @@ def lhapdf_conf(pdf):
 
     """
     # user settings *always* take precedence
-    if os.environ["LHAPDF_DATA_PATH"]:
+    if os.environ.get("LHAPDF_DATA_PATH") is not None:
         return
     if shutil.which("lhapdf-config") is not None or pkgconfig.exists("lhapdf"):
         lhapdf_data = pathlib.Path(
