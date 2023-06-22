@@ -7,7 +7,7 @@ To generate a PineAPPL grid run:
 
    pinefarm run <RUNCARD> <THEORY>
 
-In order to get a list of available pinecards run:
+In order to get a list of available `pinecards <https://github.com/NNPDF/pinecards>`_ run:
 
 .. code-block:: sh
 

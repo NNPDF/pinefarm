@@ -4,7 +4,7 @@ Yadism
 Runcard structure
 -----------------
 
-- The ``observable.yaml`` file (compulsory). This file contain the description
+- The ``observable.yaml`` file (compulsory). This file contains the description
   of the observable requested (kind and kinematics), together with further
   parameters specifying the process, and the details of the |yadism| calculation
 
