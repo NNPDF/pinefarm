@@ -53,7 +53,8 @@ class Mg5(interface.External):
     @property
     def pdf_id(self):
         """Convert PDF to SetIndex."""
-        import lhapdf # pylint: disable=import-error
+        import lhapdf  # pylint: disable=import-error
+
         return lhapdf.mkPDF(self.pdf).info().get_entry("SetIndex")
 
     def run(self):

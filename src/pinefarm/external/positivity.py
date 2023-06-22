@@ -77,7 +77,8 @@ class Positivity(interface.External):
 
     def results(self):
         """Apply PDF to grid."""
-        import lhapdf # pylint: disable=import-error
+        import lhapdf  # pylint: disable=import-error
+
         pdf = lhapdf.mkPDF(self.pdf)
         d = {
             "result": [pdf.xfxQ2(self.pid, x, self.q2) for x in self.xgrid],

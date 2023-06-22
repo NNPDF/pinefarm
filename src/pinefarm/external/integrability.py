@@ -92,7 +92,8 @@ class Integrability(interface.External):
 
     def results(self):
         """Apply PDF to grid."""
-        import lhapdf # pylint: disable=import-error
+        import lhapdf  # pylint: disable=import-error
+
         pdf = lhapdf.mkPDF(self.pdf)
         final_result = 0.0
         q2 = self._q2 * np.ones_like(self._info.xgrid)

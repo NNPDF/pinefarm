@@ -66,7 +66,8 @@ class Yadism(interface.External):
 
     def results(self):
         """Apply PDF to output."""
-        import lhapdf # pylint: disable=import-error
+        import lhapdf  # pylint: disable=import-error
+
         pdf = lhapdf.mkPDF(self.pdf)
         out = yadism.output.Output.load_tar(self.output)
         pdf_out = out.apply_pdf_alphas_alphaqed_xir_xif(
