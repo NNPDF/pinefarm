@@ -3,7 +3,6 @@ import json
 import re
 import subprocess
 
-import lhapdf # pylint: disable=import-error
 import numpy as np
 import pandas as pd
 import pineappl
@@ -54,6 +53,7 @@ class Mg5(interface.External):
     @property
     def pdf_id(self):
         """Convert PDF to SetIndex."""
+        import lhapdf # pylint: disable=import-error
         return lhapdf.mkPDF(self.pdf).info().get_entry("SetIndex")
 
     def run(self):
