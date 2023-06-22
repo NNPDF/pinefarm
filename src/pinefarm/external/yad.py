@@ -1,7 +1,7 @@
 """yadism interface."""
 from functools import reduce
 
-import lhapdf
+import lhapdf # pylint: disable=import-error
 import pandas as pd
 import yadbox.export
 import yadism

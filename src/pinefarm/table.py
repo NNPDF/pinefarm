@@ -1,7 +1,7 @@
 """Comparison tools."""
 import inspect
 
-import lhapdf
+import lhapdf # pylint: disable=import-error
 import more_itertools
 import pandas as pd
 import pineappl

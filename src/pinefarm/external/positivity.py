@@ -1,7 +1,7 @@
 """Positivity interface."""
 import json
 
-import lhapdf
+import lhapdf # pylint: disable=import-error
 import numpy as np
 import pandas as pd
 import pineappl
