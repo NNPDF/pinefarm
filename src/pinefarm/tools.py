@@ -27,7 +27,11 @@ def create_output_folder(name, theory):
 
     """
     target = configs.configs["paths"]["results"] / (
-        name +"_" +str(theory["ID"])+"_" + datetime.datetime.now().strftime("-%Y%m%d%H%M%S")
+        name
+        + "_"
+        + str(theory["ID"])
+        + "_"
+        + datetime.datetime.now().strftime("-%Y%m%d%H%M%S")
     )
     target.mkdir(exist_ok=True, parents=True)
     return target
