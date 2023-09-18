@@ -1,6 +1,6 @@
+"""yadism interface."""
 from functools import reduce
 
-import lhapdf
 import pandas as pd
 import yadbox.export
 import yadism
@@ -11,21 +11,18 @@ from .. import configs, log, tools
 from . import interface
 
 
-def is_dis(name):
-    """
-    Is this a DIS dataset, i.e. is yadism needed to run?
+def is_dis(name: str) -> bool:
+    """Determine whether this is a DIS dataset, i.e. is yadism needed to run.
 
     The decision is based on the existance of the `observable.yaml` file.
 
-    Parameters
-    ----------
-        name : str
-            dataset name
     """
     return (configs.configs["paths"]["runcards"] / name / "observable.yaml").exists()
 
 
 class Yadism(interface.External):
+    """Interface provider."""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -42,9 +39,11 @@ class Yadism(interface.External):
 
     @property
     def output(self):
+        """Return yadism output path."""
         return self.grid.with_suffix(".tar")
 
     def run(self):
+        """Run program."""
         print("Running yadism...")
 
         # run yadism
@@ -59,12 +58,16 @@ class Yadism(interface.External):
         out.dump_tar(self.output)
 
     def generate_pineappl(self):
+        """Generate grid."""
         out = yadism.output.Output.load_tar(self.output)
         yadbox.export.dump_pineappl_to_file(
             out, str(self.grid), next(iter(self.obs["observables"].keys()))
         )
 
     def results(self):
+        """Apply PDF to output."""
+        import lhapdf  # pylint: disable=import-error
+
         pdf = lhapdf.mkPDF(self.pdf)
         out = yadism.output.Output.load_tar(self.output)
         pdf_out = out.apply_pdf_alphas_alphaqed_xir_xif(
@@ -115,4 +118,5 @@ class Yadism(interface.External):
         return pdf_out
 
     def collect_versions(self):
+        """No additional programs involved."""
         return {}

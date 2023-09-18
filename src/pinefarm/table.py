@@ -1,7 +1,6 @@
+"""Comparison tools."""
 import inspect
-import itertools
 
-import lhapdf
 import more_itertools
 import pandas as pd
 import pineappl
@@ -27,6 +26,8 @@ def convolute_grid(grid, pdf_name, integrated=False):
         (essential) output splitted by line
 
     """
+    import lhapdf  # pylint: disable=import-error
+
     pdf = lhapdf.mkPDF(pdf_name)
     loaded_grid = pineappl.grid.Grid.read(str(grid))
     pineappl_results = loaded_grid.convolute_with_one(

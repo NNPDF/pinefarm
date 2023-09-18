@@ -1,3 +1,4 @@
+"""Set up CLI."""
 import pathlib
 import warnings
 
@@ -18,6 +19,7 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
     help="Explicitly specify config file (it has to be a valid TOML file).",
 )
 def command(cfg):
+    """Compute theory predictions in form of interpolation grids from external generators."""
     try:
         cfgpath = configs.detect(cfg)
     except FileNotFoundError:

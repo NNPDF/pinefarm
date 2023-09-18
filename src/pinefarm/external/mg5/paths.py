@@ -1,3 +1,4 @@
+"""Define additional local paths."""
 import pathlib
 
 subpkg = pathlib.Path(__file__).absolute().parent

@@ -1,8 +1,6 @@
 Cuts
 ====
 
-Cuts are ``bla bla bla`` available in :doc:`launch files <mg5_launch>`.
-
 They are implemented in two steps:
 
 1. cuts relevant *variables* are defined

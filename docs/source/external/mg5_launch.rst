@@ -1,11 +1,9 @@
 Launch
 ======
 
-Here is briefly recapped |mg5|'s '``launch.txt`` syntax and described the
+Here is briefly recapped |mg5|'s '``launch.txt``
 special syntax that is allowed for (and introduced by) pinecards.
 
-Relevant native syntax
-----------------------
 
 Special syntax
 --------------

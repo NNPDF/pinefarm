@@ -1,13 +1,13 @@
 ``pinefarm`` command line interface
 ===================================
 
-This is not a replacement of the CLI help, you can get it with:
+You can get the full update help of the command line interface (CLI) with:
 
 .. code-block:: sh
 
    pinefarm --help
 
-It is just a brief recap of the subcommands and their goal.
+Below we present a brief recap of the subcommands and their goal.
 
 ``install``
 -----------

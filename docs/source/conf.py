@@ -23,8 +23,8 @@ here = pathlib.Path(__file__).absolute().parent
 # -- Project information -----------------------------------------------------
 
 project = "pinefarm"
-copyright = "2021, the pinefarm team"
-author = "the pinefarm team"
+copyright = "2023, the PineLine team"
+author = "the PineLine team"
 
 
 # -- General configuration ---------------------------------------------------

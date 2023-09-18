@@ -3,8 +3,8 @@ Welcome to pinefarm's documentation!
 ####################################
 
 This documentation is about the python package used to generate the PineAPPL
-grids out of the proper pinecards, called `pinefarm` (and its CLI ``pinefarm``),
-and it covers as well the pinecards format.
+grids out of the input pinecards.
+This program is called `pinefarm` (and its CLI ``pinefarm``).
 
 Install ``pinefarm``
 ====================

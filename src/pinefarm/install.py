@@ -1,3 +1,4 @@
+"""Install tools."""
 import os
 import pathlib
 import shutil
@@ -22,6 +23,7 @@ LHAPDF_VERSION = "LHAPDF-6.4.0"
 
 
 def init_prefix():
+    """Set up paths."""
     configs.configs["paths"]["prefix"].mkdir(exist_ok=True)
     configs.configs["paths"]["bin"].mkdir(exist_ok=True)
     configs.configs["paths"]["lib"].mkdir(exist_ok=True)
@@ -34,7 +36,7 @@ def is_exe(command: os.PathLike) -> bool:
 
 
 def mg5amc():
-    """Initialize `MadGraph5_aMC\\@NLO <https://code.launchpad.net/mg5amcnlo>`_.
+    r"""Initialize `MadGraph5_aMC\@NLO <https://code.launchpad.net/mg5amcnlo>`_.
 
     Returns
     -------
@@ -83,13 +85,13 @@ def mg5amc():
 
 
 def hawaiian_vrap():
-    """Install a version of vrap flavoured with pineappl
-    from https://github.com/NNPDF/hawaiian_vrap
+    """Install a version of vrap flavoured with pineappl from https://github.com/NNPDF/hawaiian_vrap.
 
     Returns
     -------
     bool
         whether vrap is now installed
+
     """
     # Ensure that pineappl and lhapdf are installed
     _ = lhapdf()
@@ -129,8 +131,7 @@ def hawaiian_vrap():
 
 
 def cargo():
-    """Initialize `Rust <https://www.rust-lang.org/>`_ and `Cargo
-    <https://doc.rust-lang.org/stable/cargo/>`_.
+    """Initialize `Rust <https://www.rust-lang.org/>`_ and `Cargo <https://doc.rust-lang.org/stable/cargo/>`_.
 
     Returns
     -------
@@ -182,8 +183,9 @@ def pineappl(capi=True, cli=False):
         whether `pineappl` and  `pineappl_capi` are now available.
 
     """
-    # define availability condition
+
     def installed():
+        """Define availability condition."""
         return pkgconfig.exists("pineappl_capi")
 
     def cli_installed():
@@ -235,8 +237,7 @@ def pineappl(capi=True, cli=False):
 
 
 def update_lhapdf_path(path):
-    """Update LHAPDF path, both in environment and `lhapdf_management
-    <https://pypi.org/project/lhapdf-management/>`_
+    """Update LHAPDF path, both in environment and `lhapdf_management <https://pypi.org/project/lhapdf-management/>`_.
 
     Parameters
     ----------
@@ -294,8 +295,9 @@ def lhapdf():
         - for `mg5`, since it's vendored
         - for `yadism`, since we depend on the PyPI version
     """
-    # define availability condition
+
     def installed():
+        """Define availability condition."""
         try:
             # test python package availability
             import lhapdf  # pylint: disable=unused-import
@@ -320,7 +322,6 @@ def lhapdf():
             f.write(r.content)
 
     with tarfile.open(lhapdf_tar, "r:gz") as tar:
-
         tar.extractall(lhapdf_dest)
 
     env = os.environ.copy()

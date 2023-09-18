@@ -1,8 +1,8 @@
+"""Integrability interface."""
 import dataclasses
 import json
 import typing
 
-import lhapdf
 import numpy as np
 import pandas as pd
 import pineappl
@@ -16,15 +16,16 @@ _RUNCARD = "integrability.yaml"
 
 
 def is_integrability(name):
-    """Is this an integrability dataset?
-    The decision is based on the existence of `integrability.yaml`"""
+    """Determine whether this is an integrability dataset.
+
+    The decision is based on the existence of `integrability.yaml`.
+
+    """
     return (configs.configs["paths"]["runcards"] / name / _RUNCARD).exists()
 
 
 def evolution_to_flavour(evol_fl):
-    """Uses eko to transform an evolution pid (>100) to flavour basis
-    in a pineappl-usable way (flavour, weight)
-    """
+    """Use eko to transform an evolution pid (>100) to flavour basis in a pineappl-usable way (flavour, weight)."""
     if evol_fl < 100:
         return [(evol_fl, 1.0)]
     idx = br.evol_basis_pids.index(evol_fl)
@@ -48,6 +49,8 @@ class _IntegrabilityRuncard:
 
 
 class Integrability(interface.External):
+    """Interface provider."""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -58,10 +61,11 @@ class Integrability(interface.External):
         self._evo2fl = evolution_to_flavour(self._info.flavour)
 
     def run(self):
+        """Empty function."""
         pass
 
     def generate_pineappl(self):
-        """Generate the pineappl grid for the integrability observable"""
+        """Generate the pineappl grid for the integrability observable."""
         ## Generate the grid
         lumi_entries = [(fl, self._info.lepton_pid, w) for fl, w in self._evo2fl]
         luminosities = [pineappl.lumi.LumiEntry(lumi_entries)]
@@ -83,9 +87,13 @@ class Integrability(interface.External):
         grid.write(self.grid)
 
     def collect_versions(self):
+        """Add the version defined by this file."""
         return {"integrability_version": "1.0"}
 
     def results(self):
+        """Apply PDF to grid."""
+        import lhapdf  # pylint: disable=import-error
+
         pdf = lhapdf.mkPDF(self.pdf)
         final_result = 0.0
         q2 = self._q2 * np.ones_like(self._info.xgrid)

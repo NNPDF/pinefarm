@@ -1,3 +1,4 @@
+"""List available resources."""
 import rich
 import rich.markdown
 
@@ -40,6 +41,7 @@ def cuts():
 
 
 def main(path, files=False, prefix=""):
+    """List available resources."""
     report = ""
     for p in sorted(path.glob("*")):
         name = None
