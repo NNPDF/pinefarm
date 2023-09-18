@@ -11,7 +11,7 @@ import rich
 from . import configs
 
 
-def create_output_folder(name):
+def create_output_folder(name, theory):
     """Create output folder.
 
     Parameters
@@ -26,7 +26,7 @@ def create_output_folder(name):
 
     """
     target = configs.configs["paths"]["results"] / (
-        name + datetime.datetime.now().strftime("-%Y%m%d%H%M%S")
+        name +"_" +str(theory["ID"])+"_" + datetime.datetime.now().strftime("-%Y%m%d%H%M%S")
     )
     target.mkdir(exist_ok=True, parents=True)
     return target

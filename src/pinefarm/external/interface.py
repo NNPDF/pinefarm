@@ -32,7 +32,7 @@ class External(abc.ABC):
         self.timestamp = timestamp
 
         if timestamp is None:
-            self.dest = tools.create_output_folder(self.name)
+            self.dest = tools.create_output_folder(self.name, self.theory)
         else:
             self.dest = configs.configs["paths"]["results"] / (
                 self.name + "-" + self.timestamp
