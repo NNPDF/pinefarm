@@ -28,7 +28,7 @@ from .. import configs, install
 from . import interface
 
 _PINEAPPL = "test.pineappl.lz4"
-VERSION = "1.4"
+VERSION = "1.5"
 _POSITIVITY_PDFS = {
     "pos_ddb": [1, -1, 21],
     "pos_uub": [2, -2, 21],
