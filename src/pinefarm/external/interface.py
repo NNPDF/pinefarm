@@ -33,12 +33,11 @@ class External(abc.ABC):
         self.theory = theory
         self.pdf = pdf
         self.timestamp = timestamp
-
         if timestamp is None:
-            self.dest = tools.create_output_folder(self.name, self.theory)
+            self.dest = tools.create_output_folder(self.name, self.theory["ID"])
         else:
             self.dest = configs.configs["paths"]["results"] / (
-                self.name + "-" + self.timestamp
+                str(theory["ID"]) + "-" + self.name + "-" + self.timestamp
             )
             if not self.grid.exists():
                 tools.decompress(self.grid.with_suffix(".pineappl.lz4"))

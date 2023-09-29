@@ -12,7 +12,7 @@ import rich
 from . import configs
 
 
-def create_output_folder(name, theory):
+def create_output_folder(name, theoryid):
     """Create output folder.
 
     Parameters
@@ -27,10 +27,10 @@ def create_output_folder(name, theory):
 
     """
     target = configs.configs["paths"]["results"] / (
-        name
-        + "_"
-        + str(theory["ID"])
-        + "_"
+        str(theoryid)
+        + "-"
+        + name
+        + "-"
         + datetime.datetime.now().strftime("-%Y%m%d%H%M%S")
     )
     target.mkdir(exist_ok=True, parents=True)
