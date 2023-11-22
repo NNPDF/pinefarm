@@ -1,5 +1,5 @@
-Mg5aMC\@NLO
-===========
+MadGraph5_aMC\@NLO
+==================
 
 .. toctree::
    :maxdepth: 1

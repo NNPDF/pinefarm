@@ -1,14 +1,10 @@
-Pinecards preparation
-=====================
+Pinecards structure
+===================
 
-Part of the pinecards is specific by external and documented in dedicated page
-
-Common structure
-----------------
-
-The following files are important for each data set; they must be in the folder
-``pinecards/DATASET``, where ``DATASET`` is the NNPDF identifier for the
-dataset.
+As ``pinefarm`` acts as interface, the configuration of the
+external program differs largely.
+While the specific details discussed on the dedicated pages,
+there are two common files:
 
 - The :doc:`metadata.txt <metadata>` file (optional).
 - The :doc:`postrun.sh <postrun>` file (optional, must be executable).

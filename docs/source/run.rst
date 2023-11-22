@@ -13,10 +13,7 @@ In order to get a list of available `pinecards <https://github.com/NNPDF/pinecar
 
    pinefarm list pinecards
 
-.. note::
-
-   Use `TEST_RUN_SH` in order to test the toolchain, it should run fairly
-   quickly.
+Recall to set the ``runcards`` parameter in :ref:`pinefarm.toml <install:configure paths>`
 
 Analogously for theories:
 
@@ -24,11 +21,4 @@ Analogously for theories:
 
    pinefarm list theories
 
-If any software is missing, it will be installed on the fly, including:
-
-- `Madgraph5_aMC@NLO <https://launchpad.net/mg5amcnlo>`_
-- `PineAPPL <https://github.com/N3PDF/pineappl>`_
-
-.. note::
-
-   Only the code relevant to run the selected pinecard will be installed.
+Recall to set the ``theories`` parameter in :ref:`pinefarm.toml <install:configure paths>`

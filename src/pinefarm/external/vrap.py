@@ -10,7 +10,7 @@ once per kinematic file.
 Vrap datatasets can also include ``cfactors`` which need to match the name
 of the kinematic files and will be applied to the corresponding run
 ex: if the kinematic file is call "906_bin0.dat" the corresponding cfactors
-    are "ACC_906_bin0.dat" and "QCD_906_bin0.dat"
+are "ACC_906_bin0.dat" and "QCD_906_bin0.dat"
 """
 import subprocess as sp
 import tempfile

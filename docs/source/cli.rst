@@ -28,7 +28,7 @@ The output will be stored in a directory in the current path, with the name
 - the second part is the timestamp of the moment in which the command is issued
 
 ``update``
----------
+----------
 
 Update the metadata of the specified grid, with the content of the
 ``metadata.txt`` file in the current version of the pinecard.
