@@ -46,7 +46,7 @@ The remaining contents of this directory are useful for testing and debugging:
     used to generate the grid.
   - ``pineappl_gitversion``: The PineAPPL version that was used to generate the
     grid.
-  - ``results``: The comparison of the HwU results against a convolution of the
+  - ``results``: The comparison of the |hwu| results against a convolution of the
     PineAPPL grid with the PDF selected in ``launch.txt``. This is the same table
     printed at the end by ``run.sh``, and is used to verify the contents of each
     grid. It also stores the MC uncertainties.

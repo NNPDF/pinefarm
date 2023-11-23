@@ -25,7 +25,7 @@ Runcard structure
   more info in :doc:`mg5_launch`.
 
 - The ``analysis.f`` file (compulsory). This Fortran file must fill the
-  histograms from which the ``HwU`` files (histograms with uncertainties) and
+  histograms from which the |hwu| files and
   the PineAPPL grids are generated. Note that a single histogram must not
   contain more than 100 bins, otherwise |mg5| will crash. However,
   big histograms can be split up into multiple histograms, for which the runner
@@ -58,7 +58,7 @@ Output
 - ``DATASET``: The directory created by ``mg5_aMC``. A few interesting files in
   this subdirectory are:
 
-  - ``Events/-/MADatNLO.HwU``: histograms with uncertainties (HwU)
+  - ``Events/-/MADatNLO.HwU``: |hwu|
   - ``Events/-/amcblast_obs_-.pineappl``: grids created by ``mg5_aMC``, not yet
     merged together
 

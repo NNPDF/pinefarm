@@ -2,13 +2,26 @@
 Welcome to pinefarm's documentation!
 ####################################
 
-This documentation is about the python package used to generate the
-`PineAPPL grids <https://github.com/NNPDF/pineappl>`_.
+This documentation is about the python package used to generate
+|pineappl| grids.
 This program is called `pinefarm` (and its CLI ``pinefarm``).
 
 `pinefarm` serves as common interface to several other external programs that
-contain the actual physics. To run `pinefarm` you need to specify to sets
-of inputs:
+contain the actual physics. We currently support:
+
+- |mg5i| |mg5|
+- |yadismi| |yadism|
+
+.. |mg5i| image:: external/mg5.png
+   :align: middle
+   :width: 150
+
+.. |yadismi| image:: external/yadism.png
+   :align: middle
+   :width: 150
+
+
+To run `pinefarm` you need two specify to sets of inputs:
 
 1. a theory runcard, as is used by `nnpdf <https://github.com/NNPDF/nnpdf>`_.
    The theory runcard defines the general parameters of the QCD framework, such as perturbative
