@@ -26,6 +26,20 @@ and that will also require a development installation of ``pineappl`` which requ
 - ``pkg-config``
 - ``openssl`` (e.g. on Debian available in the ``libssl-dev`` package)
 
+Note that if ``openssl`` is not present in your system, you can either try to install it with conda (if you are in a conda environment), or you can install it from source as following
+
+.. code-block:: sh
+
+
+    wget https://www.openssl.org/source/openssl-X.Y.Zk.tar.gz
+    tar -zxvf openssl-X.Y.Zk.tar.gz
+    cd openssl-X.Y.Zk
+
+    ./config --prefix=$HOME/local --openssldir=$HOME/local/openssl
+    make
+    make install
+
+after which you will need to add the folder containing `openssl.pc` (`libssl.pc`) to your `PKG_CONFIG_PATH` environment variable.
 
 
 Configure paths
