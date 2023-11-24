@@ -1,11 +1,11 @@
 Generate a PineAPPL grid
 ========================
 
-To generate a PineAPPL grid run:
+To generate a |pineappl| grid run:
 
 .. code-block:: sh
 
-   pinefarm run <RUNCARD> <THEORY>
+   pinefarm run <PINECARD> <THEORYCARD>
 
 In order to get a list of available `pinecards <https://github.com/NNPDF/pinecards>`_ run:
 

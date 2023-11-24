@@ -38,7 +38,7 @@ Given those two things you can run
 
 .. code-block:: sh
 
-   pinefarm run <PATH_TO_PINECARD> <PATH_TO_THEORYCARD>
+   pinefarm run <PINECARD> <THEORYCARD>
 
 and the program will, if necessary, install the required external program and launch it's execution.
 
