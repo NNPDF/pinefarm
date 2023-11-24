@@ -12,14 +12,6 @@ contain the actual physics. We currently support:
 - |mg5i| |mg5|
 - |yadismi| |yadism|
 
-.. |mg5i| image:: external/mg5.png
-   :align: middle
-   :width: 150
-
-.. |yadismi| image:: external/yadism.png
-   :align: middle
-   :width: 150
-
 
 To run `pinefarm` you need two specify to sets of inputs:
 
@@ -28,10 +20,10 @@ To run `pinefarm` you need two specify to sets of inputs:
    orders, coupling strength or heavy quark masses.
    A list of example theory runcards is also available
    `in the repository <https://github.com/NNPDF/pinefarm/tree/main/extras/theories>`_
-2. a pinecard, as is described `here <pinecards/index>`_.
+2. a pinecard, as is described :doc:`here <pinecards>`.
    The pinecard describes the actual measurement that is performed, e.g. observable definitions,
    kinematic bins, or cuts. The pinecard will also determine which external program is executed.
-   A list of already available is available at the
+   A list of already available observables can be inspected in the
    `pinecards repository <https://github.com/NNPDF/pinecards>`_.
 
 Given those two things you can run
@@ -49,23 +41,15 @@ and the program will, if necessary, install the required external program and la
    :caption: Usage
 
    install
+   pinecards
+   cli
    run
    output
-   cli
 
 .. toctree::
    :maxdepth: 1
    :hidden:
-   :caption: Pinecards
-
-   pinecards/index
-   pinecards/metadata
-   pinecards/postrun
-
-.. toctree::
-   :maxdepth: 1
-   :hidden:
-   :caption: Externals
+   :caption: Interfaces
 
    external/index
    external/mg5

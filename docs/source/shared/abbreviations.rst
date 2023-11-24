@@ -52,8 +52,16 @@
 
    <a href="http://madgraph.phys.ucl.ac.be/">MadGraph5_aMC@NLO</a>
 
+.. |mg5i| image:: /external/mg5.png
+   :align: middle
+   :width: 150
+
 .. |yadism| replace::
    :yadism:`\ `
+
+.. |yadismi| image:: /external/yadism.png
+   :align: middle
+   :width: 150
 
 .. |pineappl| raw:: html
 

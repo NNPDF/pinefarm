@@ -1,5 +1,5 @@
-``pinefarm`` command line interface
-===================================
+Command line interface
+======================
 
 You can get the full update help of the command line interface (CLI) with:
 
@@ -17,11 +17,11 @@ Installs various programs, used to run pinecards.
 ``run``
 -------
 
-It is the main command provided, and it runs the specified pinecard in the
+This is the main command provided, and it runs the specified pinecard in the
 context of the selected theory.
 
 The output will be stored in a directory in the current path, with the name
-``<RUNCARD>-<YYYYMMDDhhmmss>``, where:
+``<PINECARD>-<YYYYMMDDhhmmss>``, where:
 
 - the first part is the name of the selected pinecard (that is also the name of
   the folder in which all the files are stored)

@@ -1,5 +1,5 @@
-Generate a PineAPPL grid
-========================
+Generating a PineAPPL grid
+==========================
 
 To generate a |pineappl| grid run:
 
