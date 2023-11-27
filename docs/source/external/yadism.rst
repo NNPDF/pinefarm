@@ -1,8 +1,8 @@
 Yadism
 ======
 
-Runcard structure
------------------
+Pinecard structure
+------------------
 
 - The ``observable.yaml`` file (compulsory). This file contains the description
   of the observable requested (kind and kinematics), together with further
@@ -18,5 +18,5 @@ Additional metadata
 Output
 ------
 
-- ``DATASET.yaml``: is the other |yadism| output format, fully human readable
+- ``<PINECARD>.yaml``: is the other |yadism| output format, fully human readable
   (but a bit verbose)
