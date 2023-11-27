@@ -2,16 +2,21 @@
 Welcome to pinefarm's documentation!
 ####################################
 
-This documentation is about the python package used to generate
-|pineappl| grids.
-This program is called `pinefarm` (and its CLI ``pinefarm``).
+`pinefarm` serves as common interface to several other external programs to compute |pineappl| grids :cite:`Carrazza:2020gss`.
+It is part of the Pineline framework :cite:`Barontini:2023vmr`.
 
-`pinefarm` serves as common interface to several other external programs that
-contain the actual physics. We currently support:
+We currently support:
 
-- |mg5i| |mg5|
-- |yadismi| |yadism|
+- |mg5i| |mg5| :cite:`Alwall:2014hca` :cite:`Frederix:2018nkq`
+- |yadismi| |yadism| :cite:`yadism`
 
+.. |mg5i| image:: /external/mg5.png
+   :align: middle
+   :width: 150
+
+.. |yadismi| image:: /external/yadism.png
+   :align: middle
+   :width: 150
 
 To run `pinefarm` you need two specify to sets of inputs:
 
@@ -62,3 +67,4 @@ and the program will, if necessary, install the required external program and la
 
    API <modules/pinefarm/pinefarm>
    indices
+   zzz-refs

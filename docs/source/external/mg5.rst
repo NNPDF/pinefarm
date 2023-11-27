@@ -1,13 +1,15 @@
 MadGraph5_aMC\@NLO
 ==================
 
+|mg5| :cite:`Alwall:2014hca` :cite:`Frederix:2018nkq` is a general-purpose event generator
+that is mainly used to compute observables in double hadronic environments such as the LHC.
+
 Pinecard structure
 ------------------
 
 - The ``output.txt`` file (compulsory). This file contains the instructions to
   generate the source code for the relevant process. For details, please see
-  `arXiv:1804.10017 <http://arxiv.org/abs/arXiv:1804.10017>`_ and
-  `arXiv:1405.0301 <http://arxiv.org/abs/arXiv:1405.0301>`_. The variable
+  :cite:`Alwall:2014hca` and :cite:`Frederix:2018nkq`. The variable
   ``@OUTPUT@`` must be used to generate the directory containing the source
   files.
 

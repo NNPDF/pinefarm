@@ -1,6 +1,9 @@
 Yadism
 ======
 
+|yadism| :cite:`yadism` is a coefficient functions library that is used to compute
+fully inclusive structure functions and cross sections in deep-inelastic scattering (DIS) experiments.
+
 Pinecard structure
 ------------------
 
