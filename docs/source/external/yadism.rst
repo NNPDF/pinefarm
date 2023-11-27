@@ -14,9 +14,7 @@ Pinecard structure
 Additional metadata
 -------------------
 
-- ``yadism_version``: The |yadism| version
-  used to generate the grid (if not a released version have been used it
-  includes also git details).
+- ``yadism_version``: The |yadism| version used to generate the grids
 
 Output
 ------
