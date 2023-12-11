@@ -35,6 +35,7 @@ class Positivity(interface.External):
         self.pid = self.runcard["pid"]
         self.q2 = self.runcard["q2"]
         self.hadron_pid = self.runcard["hadron_pid"]
+        self.polarized = self.runcard.get("polarized", False)
 
         # init pineappl objects
         lumi_entries = [pineappl.lumi.LumiEntry([(self.pid, self.lepton_pid, 1.0)])]
@@ -72,7 +73,7 @@ class Positivity(interface.External):
         grid.set_key_value("initial_state_2", str(self.lepton_pid))
         grid.set_key_value("runcard", json.dumps(self.runcard))
         grid.set_key_value("lumi_id_types", "pdg_mc_ids")
-        grid.set_key_value("polarized", self.runcard["polarized"])
+        grid.set_key_value("polarized", self.polarized)
         grid.optimize()
         grid.write(str(self.grid))
 
