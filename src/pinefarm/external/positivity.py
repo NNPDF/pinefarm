@@ -35,7 +35,7 @@ class Positivity(interface.External):
         self.pid = self.runcard["pid"]
         self.q2 = self.runcard["q2"]
         self.hadron_pid = self.runcard["hadron_pid"]
-        self.polarized = self.runcard.get("polarized", False)
+        self.polarized = self.runcard.get("polarized", "False")
 
         # init pineappl objects
         lumi_entries = [pineappl.lumi.LumiEntry([(self.pid, self.lepton_pid, 1.0)])]
