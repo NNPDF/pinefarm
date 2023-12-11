@@ -72,6 +72,7 @@ class Positivity(interface.External):
         grid.set_key_value("initial_state_2", str(self.lepton_pid))
         grid.set_key_value("runcard", json.dumps(self.runcard))
         grid.set_key_value("lumi_id_types", "pdg_mc_ids")
+        grid.set_key_value("polarized", self.runcard["polarized"])
         grid.optimize()
         grid.write(str(self.grid))
 
