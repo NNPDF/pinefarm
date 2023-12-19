@@ -59,7 +59,7 @@ class Integrability(interface.External):
         self._q2 = np.power(self.theory["Q0"], 2)
         self._info = _IntegrabilityRuncard(**yaml_dict)
         self._evo2fl = evolution_to_flavour(self._info.flavour)
-        self.polarized = self.runcard.get("polarized", "False")
+        self.polarized = yaml_dict.get("polarized", "False")
 
     def run(self):
         """Empty function."""
