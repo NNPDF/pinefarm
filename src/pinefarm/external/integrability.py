@@ -43,6 +43,7 @@ class _IntegrabilityRuncard:
     lepton_pid: int
     flavour: int
     xgrid: typing.List[float]
+    polarized: typing.Optional[str] = "False"
 
     def asdict(self):
         return dataclasses.asdict(self)
@@ -59,7 +60,7 @@ class Integrability(interface.External):
         self._q2 = np.power(self.theory["Q0"], 2)
         self._info = _IntegrabilityRuncard(**yaml_dict)
         self._evo2fl = evolution_to_flavour(self._info.flavour)
-        self.polarized = yaml_dict.get("polarized", "False")
+        self.polarized = self._info.polarized
 
     def run(self):
         """Empty function."""
@@ -107,8 +108,8 @@ class Integrability(interface.External):
             norm = 1.0
             # in the polarized case we want to integrate the first moment
             if self.polarized:
-                norm = 1 / self._info.xgrid
-            final_result += norm * w * np.sum(pdf.fxQ2(fl, self._info.xgrid, q2))
+                norm = 1 / float(self._info.xgrid[0])
+            final_result += norm * w * np.sum(pdf.xfxQ2(fl, self._info.xgrid, q2))
 
         final_cv = [final_result]
 
