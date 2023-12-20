@@ -81,13 +81,10 @@ class Integrability(interface.External):
         grid.set_key_value("runcard", json.dumps(self._info.asdict()))
         grid.set_key_value("lumi_id_types", "pdg_mc_ids")
         grid.set_key_value("polarized", self.polarized)
-        # Fill grid with x*f(x) or f(x)
+        # Fill grid with x*f(x)
         # use subgrid because fill doesn't work?
         x = self._info.xgrid
-        if self.polarized:
-            w = np.array(1.0).reshape((1, -1, 1))
-        else:
-            w = np.array(x).reshape((1, -1, 1))
+        w = np.array(x).reshape((1, -1, 1))
         sg = pineappl.import_only_subgrid.ImportOnlySubgridV1(w, [self._q2], x, x)
         grid.set_subgrid(0, 0, 0, sg)
         grid.write(self.grid)
@@ -105,11 +102,7 @@ class Integrability(interface.External):
         q2 = self._q2 * np.ones_like(self._info.xgrid)
 
         for fl, w in self._evo2fl:
-            norm = 1.0
-            # in the polarized case we want to integrate the first moment
-            if self.polarized:
-                norm = 1 / float(self._info.xgrid[0])
-            final_result += norm * w * np.sum(pdf.xfxQ2(fl, self._info.xgrid, q2))
+            final_result += w * np.sum(pdf.xfxQ2(fl, self._info.xgrid, q2))
 
         final_cv = [final_result]
 
