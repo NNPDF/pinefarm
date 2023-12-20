@@ -109,7 +109,7 @@ class Integrability(interface.External):
             if self.polarized:
                 norm = 1 / self._info.xgrid
             final_result += norm * w * np.sum(pdf.fxQ2(fl, self._info.xgrid, q2))
-    
+
         final_cv = [final_result]
 
         d = {
