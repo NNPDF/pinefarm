@@ -80,10 +80,13 @@ class Integrability(interface.External):
         grid.set_key_value("runcard", json.dumps(self._info.asdict()))
         grid.set_key_value("lumi_id_types", "pdg_mc_ids")
         grid.set_key_value("polarized", self.polarized)
-        # Fill grid with x*Tn
+        # Fill grid with x*f(x) or f(x)
         # use subgrid because fill doesn't work?
         x = self._info.xgrid
-        w = np.array(x).reshape((1, -1, 1))
+        if self.polarized:
+            w = np.array(1.0).reshape((1, -1, 1))
+        else:
+            w = np.array(x).reshape((1, -1, 1))
         sg = pineappl.import_only_subgrid.ImportOnlySubgridV1(w, [self._q2], x, x)
         grid.set_subgrid(0, 0, 0, sg)
         grid.write(self.grid)
