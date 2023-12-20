@@ -101,7 +101,12 @@ class Integrability(interface.External):
         q2 = self._q2 * np.ones_like(self._info.xgrid)
 
         for fl, w in self._evo2fl:
-            final_result += w * np.sum(pdf.xfxQ2(fl, self._info.xgrid, q2))
+            norm = 1.0
+            # in the polarized case we want to integrate the first moment
+            if self.polarized:
+                norm = 1 / self._info.xgrid
+            final_result += norm * w * np.sum(pdf.fxQ2(fl, self._info.xgrid, q2))
+    
         final_cv = [final_result]
 
         d = {
