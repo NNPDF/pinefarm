@@ -43,6 +43,7 @@ class _IntegrabilityRuncard:
     lepton_pid: int
     flavour: int
     xgrid: typing.List[float]
+    polarized: typing.Optional[str] = "False"
 
     def asdict(self):
         return dataclasses.asdict(self)
@@ -59,7 +60,7 @@ class Integrability(interface.External):
         self._q2 = np.power(self.theory["Q0"], 2)
         self._info = _IntegrabilityRuncard(**yaml_dict)
         self._evo2fl = evolution_to_flavour(self._info.flavour)
-        self.polarized = yaml_dict.get("polarized", "False")
+        self.polarized = self._info.polarized
 
     def run(self):
         """Empty function."""
@@ -80,7 +81,7 @@ class Integrability(interface.External):
         grid.set_key_value("runcard", json.dumps(self._info.asdict()))
         grid.set_key_value("lumi_id_types", "pdg_mc_ids")
         grid.set_key_value("polarized", self.polarized)
-        # Fill grid with x*Tn
+        # Fill grid with x*f(x)
         # use subgrid because fill doesn't work?
         x = self._info.xgrid
         w = np.array(x).reshape((1, -1, 1))
@@ -102,6 +103,7 @@ class Integrability(interface.External):
 
         for fl, w in self._evo2fl:
             final_result += w * np.sum(pdf.xfxQ2(fl, self._info.xgrid, q2))
+
         final_cv = [final_result]
 
         d = {
