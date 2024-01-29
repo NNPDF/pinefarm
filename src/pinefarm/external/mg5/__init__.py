@@ -1,4 +1,5 @@
 """Madgraph interface."""
+
 import json
 import re
 import subprocess

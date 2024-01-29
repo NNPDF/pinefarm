@@ -1,4 +1,5 @@
 """Print loaded configurations."""
+
 import rich
 
 from .. import configs

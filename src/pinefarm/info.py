@@ -1,4 +1,5 @@
 """Provide inspection tools."""
+
 import dataclasses
 import enum
 import typing

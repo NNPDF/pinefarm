@@ -1,4 +1,5 @@
 """yadism interface."""
+
 from functools import reduce
 
 import pandas as pd

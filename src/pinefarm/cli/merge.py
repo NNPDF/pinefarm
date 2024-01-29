@@ -1,4 +1,5 @@
 """Merge multiple PineAPPL grids into a single one."""
+
 import itertools
 import pathlib
 import re
