@@ -83,6 +83,7 @@ ipy = "ipython"
 test-mg5 = "pinefarm run TEST_RUN_SH theories/theory_213.yaml"
 test-yad = "pinefarm run HERA_CC_318GEV_EM_SIGMARED theories/theory_213.yaml"
 docs = { "shell" = "cd docs; make html" }
+docs-server = { "shell" = "cd docs; make server" }
 docs-view = { "shell" = "cd docs; make view" }
 docs-clean = { "shell" = "cd docs; make clean" }
 docs-cleanall = { "shell" = "cd docs; make cleanall" }

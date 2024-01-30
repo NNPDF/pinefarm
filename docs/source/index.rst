@@ -2,59 +2,45 @@
 Welcome to pinefarm's documentation!
 ####################################
 
-This documentation is about the python package used to generate the PineAPPL
-grids out of the input pinecards.
-This program is called `pinefarm` (and its CLI ``pinefarm``).
+`pinefarm` serves as common interface to several other external programs to compute |pineappl| grids :cite:`Carrazza:2020gss`.
+It is part of the Pineline framework :cite:`Barontini:2023vmr`.
 
-Install ``pinefarm``
-====================
+We currently support:
 
-There are two ways of installing ``pinefarm``, that are:
+- |mg5i| |mg5| :cite:`Alwall:2014hca` :cite:`Frederix:2018nkq`
+- |yadismi| |yadism| :cite:`yadism`
+- Hawaiian Vrap :cite:`Barontini:2023vmr` (a modified version of Vrap :cite:`Anastasiou:2003ds`)
+- PDF positivity observables :cite:`Candido:2020yat,Collins:2021vke,Candido:2023ujx`
+- PDF integrability observables
 
-- **production**: used by *final user*, simply run
+.. |mg5i| image:: /external/mg5.png
+   :align: middle
+   :width: 150
 
-  .. code-block:: sh
+.. |yadismi| image:: /external/yadism.png
+   :align: middle
+   :width: 150
 
-     pip install pinefarm
+To run `pinefarm` you need two specify to sets of inputs:
 
-  and then use ``pinefarm`` as a command available in ``PATH``
+1. a theory runcard, as is used by `nnpdf <https://github.com/NNPDF/nnpdf>`_.
+   The theory runcard defines the general parameters of the QCD framework, such as perturbative
+   orders, coupling strength or heavy quark masses.
+   A list of example theory runcards is also available
+   `in the repository <https://github.com/NNPDF/pinefarm/tree/main/extras/theories>`_
+2. a pinecard, as is described :doc:`here <pinecards>`.
+   The pinecard describes the actual measurement that is performed, e.g. observable definitions,
+   kinematic bins, or cuts. The pinecard will also determine which external program is executed.
+   A list of already available observables can be inspected in the
+   `pinecards repository <https://github.com/NNPDF/pinecards>`_.
 
-- **develop**: used by the tools developer
+Given those two things you can run
 
-  .. code-block:: sh
+.. code-block:: sh
 
-     poetry install
+   pinefarm run <PINECARD> <THEORYCARD>
 
-  Then run with:
-
-  .. code-block:: sh
-
-     poetry run pinefarm <args>
-
-
-Non Python dependencies
------------------------
-
-Even if the bootstrap script and the installation management try to reduce as
-much as possible the amount of dependencies, still a few ingredients have to be
-available on the system.
-
-To run the CLI:
-
-- ``python`` itself
-- ``pip`` available as a module of the ``python`` that is running ``pinefarm``
-  (as usually is)
-- ``curl``
-
-To install ``pineappl``:
-
-- ``pkg-config``
-- ``openssl.pc`` (e.g. on Debian available in the ``libssl-dev`` package)
-
-To install ``mg5amc@nlo`` and its dependencies:
-
-- ``gfortran``
-- ``wget``
+and the program will, if necessary, install the required external program and launch it's execution.
 
 
 .. toctree::
@@ -62,27 +48,23 @@ To install ``mg5amc@nlo`` and its dependencies:
    :hidden:
    :caption: Usage
 
+   install
+   pinecards
+   cli
    run
    output
-   cli
 
 .. toctree::
    :maxdepth: 1
    :hidden:
-   :caption: Runcards
-
-   pinecards/index
-   pinecards/metadata
-   pinecards/postrun
-
-.. toctree::
-   :maxdepth: 1
-   :hidden:
-   :caption: Externals
+   :caption: Interfaces
 
    external/index
    external/mg5
    external/yadism
+   external/vrap
+   external/pos
+   external/int
 
 .. toctree::
    :maxdepth: 1
@@ -91,3 +73,4 @@ To install ``mg5amc@nlo`` and its dependencies:
 
    API <modules/pinefarm/pinefarm>
    indices
+   zzz-refs

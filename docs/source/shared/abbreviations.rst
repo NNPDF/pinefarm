@@ -43,37 +43,25 @@
 .. |OME| replace::
    :abbr:`OME (operator matrix element)`
 
+.. |hwu| replace::
+   :abbr:`HwU (histograms with uncertainties)`
+
 .. external
 
 .. |mg5| raw:: html
 
-   <a href="https://launchpad.net/mg5amcnlo">MadGraph5_aMC@NLO</a>
+   <a href="http://madgraph.phys.ucl.ac.be/">MadGraph5_aMC@NLO</a>
 
 .. |yadism| replace::
    :yadism:`\ `
 
-.. |banana| replace::
-   :banana:`\ `
-
 .. |pineappl| raw:: html
 
-   <a href="https://n3pdf.github.io/pineappl/"><abbr title="PineAPPL is not an extension of APPLgrid.">PineAPPL</abbr></a>
-
-.. |APFEL| raw:: html
-
-   <a href="https://apfel.mi.infn.it/"><abbr title="A PDF Evolution Library">APFEL</abbr></a>
-
-.. |Pegasus| raw:: html
-
-   <a href="https://www.nikhef.nl/~avogt/pegasus.html"><abbr title="N-space tools for hard-scattering analyses">Pegasus</abbr></a>
+   <a href="https://nnpdf.github.io/pineappl/"><abbr title="PineAPPL is not an extension of APPLgrid.">PineAPPL</abbr></a>
 
 .. |lhapdf| raw:: html
 
    <a href="https://lhapdf.hepforge.org/"><abbr title="LHAPDF">lhapdf</abbr></a>
-
-.. |QCDNUM| raw:: html
-
-   <a href="https://www.nikhef.nl/~h24/qcdnum/"><abbr title="Quantum ChromoDynamics NUM">QCDNUM</abbr></a>
 
 .. |T| raw:: html
 
