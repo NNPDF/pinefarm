@@ -1,4 +1,5 @@
 """Configuration tools."""
+
 import copy
 import os
 import pathlib

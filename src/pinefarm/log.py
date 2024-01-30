@@ -1,4 +1,5 @@
 """Logging tools."""
+
 import pathlib
 import subprocess as sp
 import sys

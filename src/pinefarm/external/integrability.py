@@ -1,4 +1,5 @@
 """Integrability interface."""
+
 import dataclasses
 import json
 import typing

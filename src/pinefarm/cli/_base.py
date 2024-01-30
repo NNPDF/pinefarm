@@ -1,4 +1,5 @@
 """Set up CLI."""
+
 import pathlib
 import warnings
 
