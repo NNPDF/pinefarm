@@ -1,4 +1,5 @@
 """Abstract interface."""
+
 import abc
 import base64
 import os

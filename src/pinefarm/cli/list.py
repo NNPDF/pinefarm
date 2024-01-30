@@ -1,4 +1,5 @@
 """List available resources."""
+
 import rich
 import rich.markdown
 

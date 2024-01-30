@@ -1,4 +1,5 @@
 """Comparison tools."""
+
 import inspect
 
 import more_itertools

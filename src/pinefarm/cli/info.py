@@ -1,4 +1,5 @@
 """Inspect runcards."""
+
 import pathlib
 
 import click
