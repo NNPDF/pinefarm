@@ -1,5 +1,5 @@
 MATRIX
-==================
+======
 
 
 Metadata to store in PineAPPL grid
