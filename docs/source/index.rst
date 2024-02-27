@@ -62,6 +62,7 @@ and the program will, if necessary, install the required external program and la
    external/index
    external/mg5
    external/yadism
+   external/matrix
    external/vrap
    external/pos
    external/int
