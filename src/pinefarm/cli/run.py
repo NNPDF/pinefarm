@@ -59,7 +59,11 @@ def main(dataset, theory, pdf):
 
     rich.print(dataset)
 
-    datainfo = info.label(dataset)
+    try:
+        datainfo = info.label(dataset)
+    except UnboundLocalError as e:
+        raise UnboundLocalError(f"Runcard {dataset} could not be found") from e
+
 
     rich.print(f"Computing [{datainfo.color}]{dataset}[/]...")
     runner = datainfo.external(dataset, theory, pdf, timestamp=timestamp)
