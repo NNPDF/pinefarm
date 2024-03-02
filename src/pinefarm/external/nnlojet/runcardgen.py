@@ -255,7 +255,7 @@ def generate_runcard(
     channel: str,
     runcard_name: str = "runcard",
     is_warmup: bool = False,
-    events: float = 1e4,
+    events: int = int(1e4),
     iterations: int = 1,
     output=Path("."),
 ):
@@ -304,9 +304,9 @@ def generate_runcard(
     return runcard_path
 
 
-def generate_nnlojet_runcard(yamlfile, channels=("LO",), output=Path(".")):
+def generate_nnlojet_runcard(yamlinfo, channels=("LO",), output=Path(".")):
     """Generate a nnlojet runcard from a yaml pinecard"""
-    yaml_metadata = parse_input_yaml(yamlfile)
+    yaml_metadata = YamlLOJET(**yamlinfo)
 
     output.mkdir(exist_ok=True, parents=True)
 
