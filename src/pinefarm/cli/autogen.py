@@ -27,9 +27,11 @@ def runcards(dataset, target, theory):
     output = configs.configs["paths"]["runcards"] / f"{target}_{dataset.upper()}"
 
     if target == "NNLOJET":
-        output_runcard = generate_pinecard_from_nnpdf(dataset, output_path=output)
+        output_runcards = generate_pinecard_from_nnpdf(dataset, output_path=output)
 
-    print("Runcard written to", output_runcard)
+    print("Runcards written to: ")
+    print("\n".join(str(i) for i in output_runcards))
+    print("metadata.txt might be empty or incomplete, please modifiy it manually")
 
     if theory is not None:
         # TODO: the sqlite db will be changed before this is merged to pinefarm
