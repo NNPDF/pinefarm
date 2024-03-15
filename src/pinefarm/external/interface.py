@@ -39,6 +39,9 @@ class External(abc.ABC):
         if timestamp is None:
             self.dest = tools.create_output_folder(self.name, self.theory["ID"])
         else:
+            import ipdb
+
+            ipdb.set_trace()
             self.dest = configs.configs["paths"]["results"] / (
                 str(theory["ID"]) + "-" + self.name + "-" + self.timestamp
             )

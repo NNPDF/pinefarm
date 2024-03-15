@@ -19,26 +19,68 @@ from ruamel.yaml import YAML, CommentedMap
 from validphys.api import API
 from validphys.datafiles import path_vpdata
 from validphys.theorydbutils import fetch_theory
+from validphys.filters import KIN_LABEL
 
 # set-up the yaml reader
 yaml = YAML(pure=True)
 yaml.default_flow_style = False
 yaml.indent(sequence=4, offset=2, mapping=4)
 
-HISTOGRAM_VARIABLES = {"y", "etay", "eta", "pT", "pT2"}
+HISTOGRAM_VARIABLES = {"y", "etay", "eta", "pT", "pT2", "M2"}
+
+
+def _legacy_nnpdf_translation(df, proc_type):
+    """When reading variables with k1/k2/k3 tries to figure out to which variables it corresponds"""
+    new_vars = list(KIN_LABEL[proc_type])
+    # Reorganize a bit the names to avoid extra problems
+    if "M_ll" in new_vars:
+        new_vars[new_vars.index("M_ll2")] = "M2"
+    df.columns = df.columns.set_levels(new_vars, level=0)
 
 
 def _df_to_bins(dataframe):
     """Convert a dataframe containing min/mid/max for some kin variable
     into a list of bins as NNLOJET understands it"""
+    # If the NNPDF dataset has been implemented recently
+    # we will have min/max
+    # otherwise we have only mid and have to trick this
+    if np.allclose(dataframe["min"], dataframe["max"]):
+        # Fake min/max and hope for the best
+        mid_points = dataframe["mid"].values
+        shifts = np.diff(mid_points) / 2.0
+        bins = mid_points[:-1] + shifts
+        # Assume that the shift in the first and last points
+        # is the same as the second and next-to-last
+        fpo = [mid_points[0] - shifts[0]]
+        lpo = [mid_points[-1] + shifts[-1]]
+        return np.concatenate([fpo, bins, lpo])
+
     bins = dataframe["min"].tolist()
     bins.append(dataframe["max"].tolist()[-1])
-    return bins
+    return np.array(bins)
+
+
+def _1d_histogram(kin_df, hist_var):
+    """Prepare the histogram for a 1d distribution"""
+    histo_bins = _df_to_bins(kin_df[hist_var])
+
+    if hist_var == "pT2":
+        histo_bins = np.sqrt(histo_bins)
+        hist_var = "pT"
+
+    if hist_var == "M2":
+        histo_bins = np.sqrt(histo_bins)
+        hist_var = "M"
+
+    # Don't do more than 3 decimals
+    histo_bins = np.round(histo_bins, decimals=3).tolist()
+
+    return {"name": hist_var, "observable": hist_var, "bins": histo_bins}
 
 
 def _nnlojet_observable(observable, process):
     """Try to automatically understand the NNLOJET observables given the NNPDF process and obs"""
-    if observable == "y":
+    if observable in ("eta", "y", "etay"):
         if process.upper().startswith("Z"):
             return "yz"
         if process.upper().startswith("WP") and not process.upper().endswith("J"):
@@ -50,6 +92,9 @@ def _nnlojet_observable(observable, process):
             return "ptz"
         if process.upper().startswith("W"):
             return "ptw"
+    if observable == "M" and process.upper().startswith("Z"):
+        return "mll"
+
     raise ValueError(f"Observable {observable} not recognized for process {process}")
 
 
@@ -76,23 +121,62 @@ nnpdf_id={nnpdf_name}
 
 def select_selectors(experiment, process):
     """A selection of default selectors to be selected
-    depending on the selected experiment"""
+    depending on the selected experiment
+
+    The experiment defines the cuts to be applied to each variable.
+    The process defines the name of the variables in NNLOJET
+    """
+    cuts = {
+        "rapidity": (None, None),
+        "pt": (20.0, None),
+        "inv_mass": (None, None),
+        "mt": (None, None),
+    }
+
+    variables = {"rapidity": [], "pt": [], "inv_mass": [], "mt": []}
+
     if experiment == "LHCB":
-        lhcb_ops = [
-            {"observable": "abs_ylp", "min": 2.0, "max": 4.5},
-        ]
-        if process.startswith("Z"):
-            lhcb_ops += [
-                {"observable": "ptl2", "min": 20},
-                {"observable": "yz", "min": 2.0, "max": 4.5},
-                {"observable": "mll", "min": 60, "max": 120},
-                {"observable": "abs_ylm", "min": 2.0, "max": 4.5},
-            ]
-        elif process.startswith("WP"):
-            lhcb_ops += [
-                {"observable": "ptlp", "min": 20},
-            ]
-        return lhcb_ops
+        cuts["rapidity"] = (2.0, 4.5)
+        cuts["inv_mass"] = (60.0, 120.0)
+    elif experiment == "ATLAS":
+        cuts["rapidity"] = (0.0, 2.5)
+        cuts["inv_mass"] = (66.0, 116.0)
+        cuts["pt"] = (25.0, None)
+        cuts["mt"] = (50.0, None)
+    elif experiment == "CMS":
+        cuts["rapidity"] = (0.0, 2.4)
+        cuts["inv_mass"] = (60.0, 120.0)
+        cuts["pt"] = (35.0, None)
+    else:
+        raise NotImplementedError(f"Selectors for {experiment=} not implemented")
+
+    if process.startswith("Z"):
+        variables["rapidity"] += ["yz", "abs_ylp", "abs_ylm"]
+        variables["inv_mass"].append("mll")
+        variables["pt"].append("ptl2")
+    elif process.startswith("W"):
+        w_sign = process[1].lower()
+        variables["rapidity"].append(f"abs_yl{w_sign}")
+        variables["pt"].append(f"ptl{w_sign}")
+        variables["mt"].append("mt")
+
+    selector_options = []
+
+    for cut_type, (cut_min, cut_max) in cuts.items():
+
+        if cut_min is None and cut_max is None:
+            continue
+
+        for variable in variables[cut_type]:
+            tmp = {"observable": variable}
+            if cut_min is not None:
+                tmp["min"] = cut_min
+            if cut_max is not None:
+                tmp["max"] = cut_max
+
+            selector_options.append(tmp)
+
+    return selector_options
 
 
 def _generate_nnlojet_pinecard(runname, process, energy, experiment, histograms):
@@ -152,15 +236,59 @@ def generate_pinecard_from_nnpdf(nnpdf_dataset, scale="mz", output_path="."):
     # Now use the kinematic information to generate histograms
     kin_variables = kin_df.columns.get_level_values(0)
 
-    # TODO: Only one at a time for now
-    hist_var = list(HISTOGRAM_VARIABLES.intersection(kin_variables))[0]
-    histo_bins = _df_to_bins(kin_df[hist_var])
+    # Is it legacy?
+    if "k1" in kin_variables:
+        # Time to translate!
+        _legacy_nnpdf_translation(kin_df, metadata.process_type)
+        kin_variables = kin_df.columns.get_level_values(0)
 
-    if hist_var == "pT2":
-        histo_bins = [np.sqrt(i) for i in histo_bins]
-        hist_var = "pT"
+    hist_vars = list(HISTOGRAM_VARIABLES.intersection(kin_variables))
 
-    histograms = [{"name": hist_var, "observable": hist_var, "bins": histo_bins}]
+    # Now preprocess the variables according to the process type
+
+    # Drell Yan
+    if process in ("WPWM", "Z0", "DY"):
+        # Special case: is a histogram binned by invariant mass?
+        if "M2" in hist_vars:
+            if len(kin_df["M2"]["mid"].unique()) == 1:
+                hist_vars.remove("M2")
+
+    # Create the histogram depending on whether this is a 1D or 2D distribution (or total)
+    histograms = None
+
+    if len(hist_vars) == 1:
+        histograms = [_1d_histogram(kin_df, hist_vars[0])]
+    elif len(hist_vars) == 2:
+        # Let's (hope) it is in M2
+        if "M2" not in hist_vars:
+            raise NotImplementedError(f"Don't know how to do this 2D: {hist_vars}")
+        hist_vars.remove("M2")
+
+        another_v = hist_vars[0]
+        # Get the unique M2 values
+        unique_m2 = kin_df["M2"]["mid"].unique()
+        m_name = _nnlojet_observable("M", process)
+        histograms = []
+        probable_bounds = np.unique(_1d_histogram(kin_df, "M2")["bins"]).tolist()
+        for i, val in enumerate(unique_m2):
+            idx = kin_df["M2"]["mid"] == val
+            tmp = _1d_histogram(kin_df[idx], another_v)
+            tmp["name"] = f"{another_v}_bin_{i}"
+            tmp["extra_selectors"] = [
+                {
+                    "observable": f"{m_name}",
+                    "min": probable_bounds[i],
+                    "max": probable_bounds[i + 1],
+                }
+            ]
+            histograms.append(tmp)
+    elif len(hist_vars) == 0 and metadata.process_type == "INC":
+        # inclusive cross section, just create a big enough histogram
+        histograms = [{"observable": "y", "bins": [-10.0, 10.0], "name": "tot"}]
+    else:
+        raise NotImplementedError(
+            "3D distributions not implemented or process not recognized"
+        )
 
     is_normalized = metadata.theory.operation.lower() == "ratio"
     if is_normalized:
@@ -172,6 +300,10 @@ def generate_pinecard_from_nnpdf(nnpdf_dataset, scale="mz", output_path="."):
     hepdata = metadata._parent.hepdata.url
     arxiv = metadata._parent.arXiv.url.split("/")[-1]
     tables = metadata.tables
+    if not hepdata.startswith("https:"):
+        # Try to autoguess the doi
+        hepdata = f"https://doi.org/{hepdata}"
+
     data_comment = f"arXiv number: {arxiv}, hepdata entry: {hepdata} (tables: {tables})"
 
     # For some NNPDF datasets, different processes/energies might be grouped together

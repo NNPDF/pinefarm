@@ -49,13 +49,13 @@ def main(dataset, theory, pdf):
     timestamp = None
 
     if "-" in dataset:
+        dataset_raw, timestamp = dataset.rsplit("-", 1)
         try:
-            dataset, timestamp = dataset.split("-")
+            # Check whether the timestamp is really an integer
+            _ = int(timestamp)
+            dataset = dataset_raw
         except ValueError:
-            raise ValueError(
-                f"'{dataset}' not valid. '-' is only allowed once,"
-                " to separate dataset name from timestamp."
-            )
+            timestamp = None
 
     rich.print(dataset)
 
