@@ -54,14 +54,17 @@ class NNLOJET(interface.External):
 
     def run(self):
         """Run the corresponding NNLOJET runcard"""
-        for runcard in self._nnlojet_runcards:
-            try:
-                sp.run(["NNLOJET", "-run", runcard.name], cwd=self.dest, check=True)
-            except FileNotFoundError:
-                print(
-                    f"NNLOJET executable not found, but you can find the NNLOJET runcards at:\n> {self.dest}"
-                )
-                sys.exit(-1)
+        print(f"NNLOJET running not implemented, but you can find the NNLOJET runcards at:\n> {self.dest}")
+        sys.exit(-1)
+#         for runcard in self._nnlojet_runcards:
+#             # Exit regardless of whether there's a NNLOJET executable for now
+#             try:
+#                 sp.run(["NNLOJET", "-run", runcard.name], cwd=self.dest, check=True)
+#             except FileNotFoundError:
+#                 print(
+#                     f"NNLOJET executable not found, but you can find the NNLOJET runcards at:\n> {self.dest}"
+#                 )
+#                 sys.exit(-1)
 
     def collect_versions(self) -> dict:
         return {"nnlojet_version": "secret"}
