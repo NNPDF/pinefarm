@@ -32,7 +32,7 @@ class Histogram:
     name: str
     observable: str
     bins: list
-    extra_selectors: dict = None
+    extra_selectors: list = None
     pineappl: bool = True
 
     def to_str(self):
@@ -41,8 +41,9 @@ class Histogram:
             hstr += " grid=pine"
 
         if self.extra_selectors is not None:
+            selectors = [Selector(**i) for i in self.extra_selectors]
             hstr += f"\n{INDT}HISTOGRAM_SELECTORS\n{INDT*2}"
-            hstr += f"\n{INDT*2}".join(str(i) for i in self.extra_selectors)
+            hstr += f"\n{INDT*2}".join(i.to_str() for i in selectors)
             hstr += f"\n{INDT}END_HISTOGRAM_SELECTORS\n"
         return hstr
 
