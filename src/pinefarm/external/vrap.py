@@ -37,11 +37,6 @@ _POSITIVITY_PDFS = {
 }
 
 
-def is_vrap(name: str) -> bool:
-    """Check whether this is a dataset to be run with vrap."""
-    return (configs.configs["paths"]["runcards"] / name / "vrap.yaml").exists()
-
-
 def yaml_to_vrapcard(yaml_dict, pdf, output_file, order="NLO"):
     """Convert the dictionary from `vrap.yaml` file into a vrap runcard."""
     input_yaml = dict(yaml_dict)
@@ -68,6 +63,8 @@ def gen_pos_pdf(pdfname, base_pdf="NNPDF40_nnlo_as_01180"):
 
 class Vrap(interface.External):
     """Interface provider."""
+
+    kind = "FTDY"
 
     def __init__(self, pinecard, theorycard, *args, **kwargs):
         super().__init__(pinecard, theorycard, *args, **kwargs)

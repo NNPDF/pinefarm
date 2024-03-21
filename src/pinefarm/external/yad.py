@@ -12,17 +12,10 @@ from .. import configs, log, tools
 from . import interface
 
 
-def is_dis(name: str) -> bool:
-    """Determine whether this is a DIS dataset, i.e. is yadism needed to run.
-
-    The decision is based on the existance of the `observable.yaml` file.
-
-    """
-    return (configs.configs["paths"]["runcards"] / name / "observable.yaml").exists()
-
-
 class Yadism(interface.External):
     """Interface provider."""
+
+    kind = "DIS"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

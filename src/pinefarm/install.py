@@ -14,7 +14,6 @@ import pygit2
 import requests
 
 from . import configs, tools
-from .external import mg5, vrap
 
 PINEAPPL_REPO = "https://github.com/N3PDF/pineappl.git"
 "Git repo location for pineappl."
@@ -45,6 +44,8 @@ def mg5amc():
         whether the main executable is now existing.
 
     """
+    from .external import mg5
+
     mg5_exe = configs.configs["commands"]["mg5"]
 
     if is_exe(mg5_exe):
@@ -94,6 +95,8 @@ def hawaiian_vrap():
         whether vrap is now installed
 
     """
+    from .external import vrap
+
     # Ensure that pineappl and lhapdf are installed
     _ = lhapdf()
     _ = pineappl(capi=True)

@@ -29,6 +29,8 @@ class External(abc.ABC):
 
     """
 
+    kind = None
+
     def __init__(self, name, theory, pdf, timestamp=None):
         self.name = name
         self.theory = theory
