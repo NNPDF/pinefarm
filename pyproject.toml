@@ -4,7 +4,7 @@ version = "0.0.0"
 description = "Generate PineAPPL grids from PineCards."
 authors = [
   "Alessandro Candido <candido.ale@gmail.com>",
-  "Juan Cruz Martinez <juan.cruz@mi.infn.it>",
+  "Juan Cruz Martinez <juacrumar@lairen.eu>",
   "Felix Hekhorn <felix.hekhorn@mi.infn.it>",
   "Christopher Schwan <handgranaten-herbert@posteo.de>",
 ]
@@ -22,21 +22,29 @@ requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.12"
+python = "^3.9"
 click = "^8.0.1"
 rich = "^12.5.1"
 PyYAML = "^6.0.0"
-yadism = { extras = ["box"], version = "^0.13.2" }
-pandas = "^1.3.0"
+pandas = ">1.4"
 lz4 = "^4.0.2"
 pkgconfig = "^1.5.5"
 pygit2 = "^1.12.0"
 requests = "^2.26.0"
 lhapdf-management = "^0.3"
-pineappl = "^0.6.2"
+pineappl = "^0.7.2"
 more-itertools = "^8.10.0"
 appdirs = "^1.4.4"
 tomli = "^2.0.1"
+#yadism is currently incompatible with pineappl > 0.7
+#yadism = { extras = ["box"], version = "^0.13.2", optional=true, markers = "python_version < '3.13'" }
+eko = { extras = ["box"], version = "^0.14.2", optional=true, markers = "python_version < '3.13'" }
+nnpdf = { git = "https://github.com/NNPDF/nnpdf", optional = true, markers = "python_version > '3.8'" }
+
+[tool.poetry.extras]
+#dis = ["yadism"]
+vrap = ["eko"]
+nnpdf = ["nnpdf"]
 
 [tool.poetry.group.docs]
 optional = true
