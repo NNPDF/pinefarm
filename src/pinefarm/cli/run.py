@@ -1,6 +1,7 @@
 """Compute a dataset and compare using a given PDF."""
 
 import pathlib
+import sys
 import time
 
 import click
@@ -16,7 +17,8 @@ from ._base import command
 @click.argument("dataset")
 @click.argument("theory-path", type=click.Path(exists=True))
 @click.option("--pdf", default="NNPDF31_nlo_as_0118_luxqed")
-def subcommand(dataset, theory_path, pdf):
+@click.option("--dry", is_flag=True, help="Don't execute the underlying code")
+def subcommand(dataset, theory_path, pdf, dry):
     """Compute a dataset and compare using a given PDF.
 
     Given a DATASET name and a THEORY-PATH, a runcard is executed with the
@@ -24,16 +26,6 @@ def subcommand(dataset, theory_path, pdf):
 
     The given PDF (default: `NNPDF31_nlo_as_0118_luxqed`) will be used to
     compare original results with PineAPPL interpolation.
-
-    """
-    # read theory card from file
-    with open(theory_path) as f:
-        theory_card = yaml.safe_load(f)
-    main(dataset, theory_card, pdf)
-
-
-def main(dataset, theory, pdf):
-    """Compute a dataset and compare using a given PDF.
 
     Parameters
     ----------
@@ -44,7 +36,12 @@ def main(dataset, theory, pdf):
     pdf : str
         pdf name
 
+
     """
+    # read theory card from file
+    with open(theory_path) as f:
+        theory_card = yaml.safe_load(f)
+
     dataset = pathlib.Path(dataset).name
     timestamp = None
 
@@ -64,11 +61,23 @@ def main(dataset, theory, pdf):
     except UnboundLocalError as e:
         raise UnboundLocalError(f"Runcard {dataset} could not be found") from e
 
-
     rich.print(f"Computing [{datainfo.color}]{dataset}[/]...")
-    runner = datainfo.external(dataset, theory, pdf, timestamp=timestamp)
+    runner = datainfo.external(dataset, theory_card, pdf, timestamp=timestamp)
 
     install_reqs(runner, pdf)
+
+    # Run the preparation step of the runner (if any)
+    runner_stop = runner.preparation()
+    if dry or runner_stop:
+        rich.print(
+            f"""Running in dry mode, exiting now.
+The preparation step can be found in:
+    {runner.dest}"""
+        )
+        sys.exit(0)
+
+    ###### <this part will eventually go to -prepare->
+
     run_dataset(runner)
 
 
