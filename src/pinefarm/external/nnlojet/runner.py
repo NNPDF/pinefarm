@@ -1,8 +1,5 @@
 """Provides a runner for NNLOJET."""
 
-import subprocess as sp
-import sys
-
 from yaml import safe_load
 
 from .. import interface
@@ -17,29 +14,31 @@ class NNLOJET(interface.External):
 
         pinecard = pinecard.replace("NNLOJET_", "")
         yaml_card = (self.source / pinecard).with_suffix(".yaml")
-        yaml_dict = safe_load(yaml_card.open("r"))
+        # Save the yaml dictionary from the NNLOJET pinecard
+        self._yaml_dict = safe_load(yaml_card.open("r"))
 
+    def preparation(self):
+        """Run the preparation step for NNLOJET"""
         # Update the yaml card according to the theory
-        params = yaml_dict["parameters"]
+        params = self._yaml_dict["parameters"]
 
-        ckm_first = float(theorycard.get("CKM", "1.0").split()[0])
+        ckm_first = float(self.theory.get("CKM", "1.0").split()[0])
         if ckm_first != 1.0:
             params["CKM"] = "FULL"
 
         translate = [("MZ", "MASS[Z]"), ("MW", "MASS[W]")]
         for nnpdf_key, nnlojet_key in translate:
-            if nnpdf_key in theorycard:
-                params[nnlojet_key] = theorycard[nnpdf_key]
+            if nnpdf_key in self.theory:
+                params[nnlojet_key] = self.theory[nnpdf_key]
 
         # Autodiscover scale if possible
-        if "scales" in yaml_dict:
-            scdict = yaml_dict["scales"]
+        if (scdict := self._yaml_dict.get("scales")) is not None:
             for scale, key in scdict.items():
-                if isinstance(key, str) and key.upper() in theorycard:
-                    scdict[scale] = theorycard[key.upper()]
+                if isinstance(key, str) and key.upper() in self.theory:
+                    scdict[scale] = self.theory[key.upper()]
 
         # Select channels according to PTO
-        order = theorycard.get("PTO")
+        order = self.theory.get("PTO")
         channels = ["LO"]
         if order > 0:
             channels += ["R", "V"]
@@ -48,23 +47,16 @@ class NNLOJET(interface.External):
         if order > 2:
             raise NotImplementedError("N3LO still not working")
 
-        self._nnlojet_runcards = generate_nnlojet_runcard(
-            yaml_dict, channels, output=self.dest
-        )
+        # Generate both the production and warmup runcards
+        for warmup in [True, False]:
+            _ = generate_nnlojet_runcard(
+                self._yaml_dict, channels, output=self.dest, warmup=warmup
+            )
+        return True
 
     def run(self):
         """Run the corresponding NNLOJET runcard"""
-        print(f"NNLOJET running not implemented, but you can find the NNLOJET runcards at:\n> {self.dest}")
-        sys.exit(-1)
-#         for runcard in self._nnlojet_runcards:
-#             # Exit regardless of whether there's a NNLOJET executable for now
-#             try:
-#                 sp.run(["NNLOJET", "-run", runcard.name], cwd=self.dest, check=True)
-#             except FileNotFoundError:
-#                 print(
-#                     f"NNLOJET executable not found, but you can find the NNLOJET runcards at:\n> {self.dest}"
-#                 )
-#                 sys.exit(-1)
+        raise NotImplementedError("NNLOJET running not implemented outside of dry mode")
 
     def collect_versions(self) -> dict:
         return {"nnlojet_version": "secret"}
