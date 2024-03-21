@@ -16,10 +16,6 @@ from copy import deepcopy
 
 import numpy as np
 from ruamel.yaml import YAML, CommentedMap
-from validphys.api import API
-from validphys.datafiles import path_vpdata
-from validphys.theorydbutils import fetch_theory
-from validphys.filters import KIN_LABEL
 
 # set-up the yaml reader
 yaml = YAML(pure=True)
@@ -31,6 +27,8 @@ HISTOGRAM_VARIABLES = {"y", "etay", "eta", "pT", "pT2", "M2"}
 
 def _legacy_nnpdf_translation(df, proc_type):
     """When reading variables with k1/k2/k3 tries to figure out to which variables it corresponds"""
+    from validphys.filters import KIN_LABEL
+
     new_vars = list(KIN_LABEL[proc_type])
     # Reorganize a bit the names to avoid extra problems
     if "M_ll" in new_vars:
@@ -223,6 +221,8 @@ def _generate_nnlojet_pinecard(runname, process, energy, experiment, histograms)
 def generate_pinecard_from_nnpdf(nnpdf_dataset, scale="mz", output_path="."):
     """Generate a NNLOJET pinecard from an NNPDF dataset"""
     # Load the NNPDF dataset
+    from validphys.api import API
+
     commondata = API.commondata(dataset_input={"dataset": nnpdf_dataset})
     metadata = commondata.metadata
     kin_df = metadata.load_kinematics(drop_minmax=False)

@@ -39,9 +39,6 @@ class External(abc.ABC):
         if timestamp is None:
             self.dest = tools.create_output_folder(self.name, self.theory["ID"])
         else:
-            import ipdb
-
-            ipdb.set_trace()
             self.dest = configs.configs["paths"]["results"] / (
                 str(theory["ID"]) + "-" + self.name + "-" + self.timestamp
             )
@@ -70,6 +67,10 @@ class External(abc.ABC):
     @staticmethod
     def install():
         """Install all needed programs."""
+
+    def preparation(self):
+        """Run the preparation method of the runner"""
+        return False
 
     @abc.abstractmethod
     def run(self):

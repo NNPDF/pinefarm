@@ -305,7 +305,9 @@ def generate_runcard(
     return runcard_path
 
 
-def generate_nnlojet_runcard(yamlinfo, channels=("LO",), output=Path(".")):
+def generate_nnlojet_runcard(
+    yamlinfo, channels=("LO",), output=Path("."), warmup=False
+):
     """Generate a nnlojet runcard from a yaml pinecard"""
     yaml_metadata = YamlLOJET(**yamlinfo)
 
@@ -313,5 +315,8 @@ def generate_nnlojet_runcard(yamlinfo, channels=("LO",), output=Path(".")):
 
     runcards = []
     for channel in channels:
-        runcards.append(generate_runcard(yaml_metadata, channel, output=output))
+        runcard_path = generate_runcard(
+            yaml_metadata, channel, output=output, is_warmup=warmup
+        )
+        runcards.append(runcard_path)
     return runcards
