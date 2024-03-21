@@ -1,10 +1,12 @@
 """Autogenerate pinecards from NNPDF metadata"""
 
 import click
+import rich
 
 from .. import configs
 from ..external.nnlojet import generate_pinecard_from_nnpdf
 from ._base import command
+
 
 @command.command("autogen")
 @click.argument("dataset", nargs=1)
@@ -20,6 +22,6 @@ def runcards(dataset, target):
     if target == "NNLOJET":
         output_runcards = generate_pinecard_from_nnpdf(dataset, output_path=output)
 
-    print("Runcards written to: ")
-    print("\n".join(str(i) for i in output_runcards))
-    print("metadata.txt might be empty or incomplete, please modifiy it manually")
+    rich.print("Runcards written to: ")
+    rich.print("    " + "\n".join(str(i) for i in output_runcards))
+    rich.print("metadata.txt might be empty or incomplete, please modifiy it manually")
