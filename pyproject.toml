@@ -119,4 +119,4 @@ max-line-length = 100
 max-args = 10
 
 [tool.pydocstyle]
-add_ignore = ['D401', 'D107', 'D105']
+add_ignore = ['D105', 'D107']
