@@ -22,4 +22,4 @@ jobs:
           installer-parallel: true
       - name: Install project
         run: |
-          poetry install --no-interaction
+          poetry install --no-interaction -E complete

@@ -29,22 +29,22 @@ def decide_external_tool(dsname):
     # or a prefix in the pinecard
 
     # DIS with yadism
-    if (configs.configs["paths"]["runcards"] / dsname / "observable.yaml").exists():
+    if (configs["paths"]["runcards"] / dsname / "observable.yaml").exists():
         from . import yad
 
         return yad.Yadism, "red"
 
-    if (configs.configs["paths"]["runcards"] / dsname / "vrap.yaml").exists():
+    if (configs["paths"]["runcards"] / dsname / "vrap.yaml").exists():
         from . import vrap
 
         return vrap.Vrap, "green"
 
-    if (configs.configs["paths"]["runcards"] / dsname / "positivity.yaml").exists():
+    if (configs["paths"]["runcards"] / dsname / "positivity.yaml").exists():
         from . import positivity
 
         return positivity.Positivity, "yellow"
 
-    if (configs.configs["paths"]["runcards"] / dsname / "integrability.yaml").exists():
+    if (configs["paths"]["runcards"] / dsname / "integrability.yaml").exists():
         from . import integrability
 
         return integrability.Integrability, "brown"
