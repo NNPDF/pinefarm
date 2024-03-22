@@ -69,7 +69,7 @@ class External(abc.ABC):
         """Install all needed programs."""
 
     def preparation(self):
-        """Run the preparation method of the runner"""
+        """Run the preparation method of the runner."""
         return False
 
     @abc.abstractmethod

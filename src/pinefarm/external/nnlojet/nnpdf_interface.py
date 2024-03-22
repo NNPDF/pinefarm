@@ -1,7 +1,11 @@
 """
-    Read up all important information form an NNPDF dataset
+Read up all important information form an NNPDF dataset.
 
-    The selector generation is very flaky and is (mostly) up to the user for now
+The selector generation is very flaky and is (mostly) up to the user for now.
+
+Some examples:
+
+```yaml
     - histogram with selectors
     histograms:
         name: test
@@ -10,6 +14,7 @@
         extra_selectors:
             - "reject abs_ylp min = 1.37 max = 1.52"
             - "reject abs_ylm min = 1.37 max = 1.52"
+```
 """
 
 from copy import deepcopy
@@ -26,7 +31,7 @@ HISTOGRAM_VARIABLES = {"y", "etay", "eta", "pT", "pT2", "M2"}
 
 
 def _legacy_nnpdf_translation(df, proc_type):
-    """When reading variables with k1/k2/k3 tries to figure out to which variables it corresponds"""
+    """When reading variables with k1/k2/k3 tries to figure out to which variables it corresponds."""
     from validphys.filters import KIN_LABEL
 
     new_vars = list(KIN_LABEL[proc_type])
@@ -37,8 +42,11 @@ def _legacy_nnpdf_translation(df, proc_type):
 
 
 def _df_to_bins(dataframe):
-    """Convert a dataframe containing min/mid/max for some kin variable
-    into a list of bins as NNLOJET understands it"""
+    """NNPDF kin dataframe to list of bins.
+
+    Convert a dataframe containing min/mid/max for some kin variable
+    into a list of bins as NNLOJET understands it.
+    """
     # If the NNPDF dataset has been implemented recently
     # we will have min/max
     # otherwise we have only mid and have to trick this
@@ -59,7 +67,7 @@ def _df_to_bins(dataframe):
 
 
 def _1d_histogram(kin_df, hist_var):
-    """Prepare the histogram for a 1d distribution"""
+    """Prepare the histogram for a 1d distribution."""
     histo_bins = _df_to_bins(kin_df[hist_var])
 
     if hist_var == "pT2":
@@ -77,7 +85,7 @@ def _1d_histogram(kin_df, hist_var):
 
 
 def _nnlojet_observable(observable, process):
-    """Try to automatically understand the NNLOJET observables given the NNPDF process and obs"""
+    """Try to automatically understand the NNLOJET observables given the NNPDF process and obs."""
     if observable in ("eta", "y", "etay"):
         if process.upper().startswith("Z"):
             return "yz"
@@ -97,7 +105,7 @@ def _nnlojet_observable(observable, process):
 
 
 def _generate_metadata(arxiv, hepdata, nnpdf_name, output):
-    """Generate a minimal ``metadata.txt`` file"""
+    """Generate a minimal ``metadata.txt`` file."""
     empty_fields = [
         "description",
         "x1_label",
@@ -118,8 +126,7 @@ nnpdf_id={nnpdf_name}
 
 
 def select_selectors(experiment, process):
-    """A selection of default selectors to be selected
-    depending on the selected experiment
+    """A selection of default selectors to be selected depending on the selected experiment.
 
     The experiment defines the cuts to be applied to each variable.
     The process defines the name of the variables in NNLOJET
@@ -178,7 +185,7 @@ def select_selectors(experiment, process):
 
 
 def _generate_nnlojet_pinecard(runname, process, energy, experiment, histograms):
-    """Generate a pinecard for NNLOJET runs from an NNPDF dataset"""
+    """Generate a pinecard for NNLOJET runs from an NNPDF dataset."""
     selectors = select_selectors(experiment, process)
     histograms = deepcopy(histograms)
 
@@ -219,7 +226,7 @@ def _generate_nnlojet_pinecard(runname, process, energy, experiment, histograms)
 
 
 def generate_pinecard_from_nnpdf(nnpdf_dataset, scale="mz", output_path="."):
-    """Generate a NNLOJET pinecard from an NNPDF dataset"""
+    """Generate a NNLOJET pinecard from an NNPDF dataset."""
     # Load the NNPDF dataset
     from validphys.api import API
 
