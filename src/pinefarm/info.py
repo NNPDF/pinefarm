@@ -1,20 +1,10 @@
 """Provide inspection tools."""
 
 import dataclasses
-import enum
 import typing
 
-from .external import integrability, interface, mg5, positivity, vrap, yad
-
-
-class Kind(enum.Enum):
-    """Interface types."""
-
-    dis = enum.auto()
-    positivity = enum.auto()
-    ftdy = enum.auto()
-    hadronic = enum.auto()
-    integrability = enum.auto()
+from .external import decide_external_tool
+from .external.interface import External
 
 
 @dataclasses.dataclass
@@ -22,23 +12,15 @@ class Info:
     """Info type."""
 
     color: str
-    external: typing.Type[interface.External]
-    kind: Kind
+    external: typing.Type[External]
+
+    @property
+    def kind(self):
+        """Type of process as defined by the external interface."""
+        return self.external.kind
 
 
 def label(dataset: str) -> Info:
     """Generate associated Info type."""
-    if yad.is_dis(dataset):
-        return Info(color="red", external=yad.Yadism, kind=Kind.dis)
-    if positivity.is_positivity(dataset):
-        return Info(
-            color="yellow", external=positivity.Positivity, kind=Kind.positivity
-        )
-    if vrap.is_vrap(dataset):
-        return Info(color="green", external=vrap.Vrap, kind=Kind.ftdy)
-    if integrability.is_integrability(dataset):
-        return Info(
-            color="brown", external=integrability.Integrability, kind=Kind.integrability
-        )
-
-    return Info(color="blue", external=mg5.Mg5, kind=Kind.hadronic)
+    ext_tool, color = decide_external_tool(dataset)
+    return Info(color=color, external=ext_tool)

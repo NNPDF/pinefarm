@@ -10,19 +10,9 @@ import pineappl
 import yaml
 from eko import basis_rotation as br
 
-from .. import configs
 from . import interface
 
 _RUNCARD = "integrability.yaml"
-
-
-def is_integrability(name):
-    """Determine whether this is an integrability dataset.
-
-    The decision is based on the existence of `integrability.yaml`.
-
-    """
-    return (configs.configs["paths"]["runcards"] / name / _RUNCARD).exists()
 
 
 def evolution_to_flavour(evol_fl):
@@ -52,6 +42,8 @@ class _IntegrabilityRuncard:
 
 class Integrability(interface.External):
     """Interface provider."""
+
+    kind = "Integrability"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

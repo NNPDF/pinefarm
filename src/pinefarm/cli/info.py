@@ -47,7 +47,7 @@ def runcards(datasets, metadata, kind):
                 datainfo["metadata"] = tools.parse_metadata(fd)
 
         if kind:
-            datainfo["kind"] = info.label(dataset).kind.name
+            datainfo["kind"] = info.label(dataset).kind
 
     rich.print_json(data=infod)
 

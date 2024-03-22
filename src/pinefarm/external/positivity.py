@@ -11,13 +11,10 @@ from .. import configs
 from . import interface
 
 
-def is_positivity(name: str) -> bool:
-    """Determine whether this a positivity dataset."""
-    return (configs.configs["paths"]["runcards"] / name / "positivity.yaml").exists()
-
-
 class Positivity(interface.External):
     """Interface provider."""
+
+    kind = "Positivity"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
