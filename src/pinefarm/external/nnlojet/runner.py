@@ -18,7 +18,7 @@ class NNLOJET(interface.External):
         self._yaml_dict = safe_load(yaml_card.open("r"))
 
     def preparation(self):
-        """Run the preparation step for NNLOJET"""
+        """Run the preparation step for NNLOJET."""
         # Update the yaml card according to the theory
         params = self._yaml_dict["parameters"]
 
@@ -55,14 +55,17 @@ class NNLOJET(interface.External):
         return True
 
     def run(self):
-        """Run the corresponding NNLOJET runcard"""
+        """Run the corresponding NNLOJET runcard."""
         raise NotImplementedError("NNLOJET running not implemented outside of dry mode")
 
     def collect_versions(self) -> dict:
+        """NNLOJET version."""
         return {"nnlojet_version": "secret"}
 
     def generate_pineappl(self):
+        """Not implemented."""
         print("Not yet")
 
     def results(self):
+        """Not implemented."""
         print("Good luck")

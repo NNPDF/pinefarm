@@ -1,4 +1,4 @@
-"""Autogenerate pinecards from NNPDF metadata"""
+"""Autogenerate pinecards from NNPDF metadata."""
 
 import click
 import rich
@@ -16,7 +16,7 @@ from ._base import command
     default="NNLOJET",
 )
 def runcards(dataset, target):
-    """Generate a runcard from an NNPDF dataset"""
+    """Generate a runcard from an NNPDF dataset."""
     output = configs.configs["paths"]["runcards"] / f"{target}_{dataset.upper()}"
 
     if target == "NNLOJET":

@@ -71,7 +71,7 @@ class External(abc.ABC):
         _ = install.lhapdf()
 
     def preparation(self):
-        """Run the preparation method of the runner"""
+        """Run the preparation method of the runner."""
         return False
 
     @abc.abstractmethod
