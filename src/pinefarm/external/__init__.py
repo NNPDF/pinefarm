@@ -6,10 +6,9 @@ eager import and thus unnecessary installations of external codes.
 """
 
 from ..configs import configs
-from .interface import External
 
 
-def decide_external_tool(dsname: str) -> tuple[External, str]:
+def decide_external_tool(dsname: str):
     """Decide the external tool to be used.
 
     The decisions are based on the existence of a `.yaml` file with a specific name.
