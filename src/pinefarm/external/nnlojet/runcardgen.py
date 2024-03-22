@@ -1,6 +1,7 @@
-"""
-    Module for the autogeneration of NNLOJET runcards using as input
-    yaml files containing the NNPDF dataset information
+"""Autogeneration of NNLOJET runcards.
+
+Module for the autogeneration of NNLOJET runcards using as input
+yaml files containing the NNPDF dataset information.
 """
 
 import logging
@@ -29,13 +30,15 @@ INDT = "  "  # indentation
 
 @dataclass
 class Histogram:
+    """Holds histogram information."""
+
     name: str
     observable: str
     bins: list
     extra_selectors: list = None
     pineappl: bool = True
 
-    def to_str(self):
+    def to_str(self):  # noqa: D102
         hstr = f"{INDT}{self.observable} > {self.name} {self.bins}"
         if self.pineappl:
             hstr += " grid=pine"
@@ -50,11 +53,13 @@ class Histogram:
 
 @dataclass
 class Selector:
+    """Holds selector information."""
+
     observable: str
     min: float = None
     max: float = None
 
-    def to_str(self):
+    def to_str(self):  # noqa: D102
         ret = f"{INDT}select {self.observable} "
         if self.min is not None:
             ret += f" min = {self.min}"
@@ -65,7 +70,7 @@ class Selector:
 
 @dataclass
 class YamlLOJET:
-    """Definition of the yaml runcard for sending NNLOJET jobs"""
+    """Definition of the yaml runcard for sending NNLOJET jobs."""
 
     runname: str
     process: dict
@@ -84,10 +89,13 @@ class YamlLOJET:
 
     @cached_property
     def channel_names_list(self):
+        """List of channels."""
         return list(self.channels.keys())
 
     def active_channels(self, active_channels=None):
-        """Loop over all channels in the yamlcard and check whether
+        """Digest active channels.
+
+        Loop over all channels in the yamlcard and check whether
         it correspond to one of the channels in the list `active_channels`
         e.g., if active_channels = [RR, RV], all RRa_n, RRb_n, and RV_n will be accepted
         If active_channels is None, return the whole thing for [LO, R, V, RR, RV, VV]
@@ -123,17 +131,20 @@ class YamlLOJET:
         return ret
 
     def get_channel_list(self, channel):
+        """Generate list of channels."""
         return self.channels[channel]
 
     @property
     def process_name(self):
+        """Get process name."""
         return self.process["proc"]
 
     def selector_definitions(self):
+        """Get definition of selectors."""
         return "\n".join(i.to_str() for i in self.selectors)
 
     def histogram_definitions(self):
-        """Return a string with the definition of all the histograms
+        """Return a string with the definition of all the histograms.
 
         In general the histogram is defined in the yaml file as a dict with:
             - name
@@ -145,6 +156,7 @@ class YamlLOJET:
 
 
 def parse_input_yaml(yaml_path):
+    """Parse the yaml runcard into a YamlLOJET object."""
     if not yaml_path.exists():
         raise FileNotFoundError(f"Yaml file {yaml_path} not found")
     yaml_dict = safe_load(yaml_path.open("r"))
@@ -152,6 +164,7 @@ def parse_input_yaml(yaml_path):
 
 
 def _fill_process(process):
+    """Fill process options."""
     process_name = process["proc"]
     sqrts = process["sqrts"]
     """Fill process block given the metadata for the process"""
@@ -165,6 +178,7 @@ END_PROCESS
 
 
 def _fill_run(runname, pdf, mode_line, techcut=1e-7, multi_channel=3):
+    """Fil run options."""
     if multi_channel == 0:
         multi_channel = ".false."
     return f"""
@@ -181,6 +195,7 @@ END_RUN
 
 
 def _fill_parameters(theory_parameters):
+    """Fill physical parameters."""
     parameters = {
         "MASS[Z]": 91.1876,
         "WIDTH[Z]": 2.4952,
@@ -201,6 +216,7 @@ END_PARAMETERS
 
 
 def _fill_selectors(metadata):
+    """Fill selectors."""
     return f"""
 SELECTORS
 {metadata.selector_definitions()}
@@ -209,7 +225,7 @@ END_SELECTORS
 
 
 def _fill_histograms(metadata, empty=True):
-    """Create the histograms from the declarative definition"""
+    """Create the histograms from the declarative definition."""
     if empty:
         histogram_content = ""
     else:
@@ -223,6 +239,7 @@ END_HISTOGRAMS
 
 
 def _fill_scales(scales):
+    """Fill in scales."""
     mur = scales.get("mur", 91.2)
     muf = scales.get("muf", 91.2)
 
@@ -234,7 +251,7 @@ END_SCALES
 
 
 def region_str_generator(channel_name):
-    """Given the name of the channel, set up the region"""
+    """Given the name of the channel, set up the region."""
     order = channel_name.split("_", 1)[0]
     if order.endswith("a"):
         return "region = a"
@@ -244,6 +261,7 @@ def region_str_generator(channel_name):
 
 
 def _fill_channels(channels, region_str=""):
+    """Fill channels."""
     return f"""
 CHANNELS {region_str}
   {channels}
@@ -260,10 +278,10 @@ def generate_runcard(
     iterations: int = 1,
     output=Path("."),
 ):
-    """Generate a NNLOJET runcard given the metadata of the run in the folder defined by che channel name
-    The output path of the runcard will be ./channel/runcard_name_{warmup/production}.run
-    """
+    """Generate a NNLOJET runcard given the metadata of the run in the folder defined by che channel name.
 
+    The output path of the runcard will be ./channel/runcard_name_{warmup/production}.run.
+    """
     channel_dir = output / channel
     channel_dir.mkdir(exist_ok=True)
 
@@ -308,7 +326,7 @@ def generate_runcard(
 def generate_nnlojet_runcard(
     yamlinfo, channels=("LO",), output=Path("."), warmup=False
 ):
-    """Generate a nnlojet runcard from a yaml pinecard"""
+    """Generate a nnlojet runcard from a yaml pinecard."""
     yaml_metadata = YamlLOJET(**yamlinfo)
 
     output.mkdir(exist_ok=True, parents=True)
