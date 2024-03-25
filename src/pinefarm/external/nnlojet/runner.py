@@ -22,8 +22,7 @@ class NNLOJET(interface.External):
         # Update the yaml card according to the theory
         params = self._yaml_dict["parameters"]
 
-        ckm_first = float(self.theory.get("CKM", "1.0").split()[0])
-        if ckm_first != 1.0:
+        if self.theory.get("CKM", [1.0])[0] != 1.0:
             params["CKM"] = "FULL"
 
         translate = [("MZ", "MASS[Z]"), ("MW", "MASS[W]")]

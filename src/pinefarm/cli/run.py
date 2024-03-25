@@ -41,6 +41,9 @@ def subcommand(dataset, theory_path, pdf, dry):
     # read theory card from file
     with open(theory_path) as f:
         theory_card = yaml.safe_load(f)
+        # Fix (possible) problems with CKM matrix loading
+        if isinstance(theory_card.get("CKM"), str):
+            theory_card["CKM"] = [float(i) for i in theory_card["CKM"].split()]
 
     dataset = pathlib.Path(dataset).name
     timestamp = None
