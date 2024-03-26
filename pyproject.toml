@@ -38,12 +38,13 @@ appdirs = "^1.4.4"
 tomli = "^2.0.1"
 yadism = { extras = ["box"], version = "^0.13.5", optional=true, markers = "python_version < '3.13'" }
 eko = { extras = ["box"], version = "^0.14.2", optional=true, markers = "python_version < '3.13'" }
+nnpdf = { git = "https://github.com/NNPDF/nnpdf", optional = true, markers = "python_version < '3.13'" }
 
 [tool.poetry.extras]
 dis = ["yadism"]
 vrap = ["eko"]
 constraints = ["dis", "vrap"] # integrability + positivity
-complete = ["yadism", "eko"]
+complete = ["yadism", "eko", "nnpdf"]
 
 [tool.poetry.group.docs]
 optional = true

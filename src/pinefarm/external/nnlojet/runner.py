@@ -3,7 +3,7 @@
 from yaml import safe_load
 
 from .. import interface
-from .runcardgen import YamlLOJET, generate_runcard
+from .runcardgen import YamlLOJET, generate_combine_ini, generate_runcard
 
 # Reasonable default for warmup and production for DY
 _DEFAULTS = {
@@ -53,24 +53,28 @@ class NNLOJET(interface.External):
             raise NotImplementedError("N3LO still not working")
 
         pinedata = YamlLOJET(**self._yaml_dict)
+        # Given the allowed channel, generate the possible channel choices
+        active_channels = pinedata.active_channels(channels)
+
         # Generate both the production and warmup runcards with reasonable defaults
-
         self.dest.mkdir(exist_ok=True, parents=True)
-        for channel in channels:
-
+        for level_name, level_channels in active_channels.items():
+            print(f"Preparing {len(level_channels)} runcards for {level_name}")
             for mode in ["warmup", "production"]:
                 nev = _DEFAULTS[mode]["events"]
                 nit = _DEFAULTS[mode]["iterations"]
-                is_warmup = mode == "warmup"
-                _ = generate_runcard(
-                    pinedata,
-                    channel,
-                    output=self.dest,
-                    is_warmup=is_warmup,
-                    events=nev,
-                    iterations=nit,
-                )
+                for channel in level_channels:
+                    is_warmup = mode == "warmup"
+                    _ = generate_runcard(
+                        pinedata,
+                        channel,
+                        output=self.dest,
+                        is_warmup=is_warmup,
+                        events=nev,
+                        iterations=nit,
+                    )
 
+        generate_combine_ini(pinedata, active_channels, self.dest)
         return True
 
     def run(self):
