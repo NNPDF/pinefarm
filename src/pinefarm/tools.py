@@ -32,7 +32,7 @@ def create_output_folder(name, theoryid):
         + "-"
         + name
         + "-"
-        + datetime.datetime.now().strftime("-%Y%m%d%H%M%S")
+        + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     )
     target.mkdir(exist_ok=True, parents=True)
     return target

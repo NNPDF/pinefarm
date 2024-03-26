@@ -29,14 +29,12 @@ def subcommand(dataset, theory_path, pdf, dry):
 
     Parameters
     ----------
-    dataset : str
-        dataset name
-    theory : dict
-        theory dictionary
-    pdf : str
-        pdf name
-
-
+        dataset: str
+            dataset name
+        theory: dict
+            theory dictionary
+        pdf: str
+            pdf name
     """
     # read theory card from file
     with open(theory_path) as f:
