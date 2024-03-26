@@ -3,7 +3,7 @@
 from yaml import safe_load
 
 from .. import interface
-from .runcardgen import YamlLOJET, generate_runcard
+from .runcardgen import YamlLOJET, generate_combine_ini, generate_runcard
 
 # Reasonable default for warmup and production for DY
 _DEFAULTS = {
@@ -71,6 +71,7 @@ class NNLOJET(interface.External):
                     iterations=nit,
                 )
 
+        generate_combine_ini(pinedata, channels, self.dest)
         return True
 
     def run(self):
