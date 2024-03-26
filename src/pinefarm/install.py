@@ -18,7 +18,7 @@ from . import configs, tools
 PINEAPPL_REPO = "https://github.com/N3PDF/pineappl.git"
 "Git repo location for pineappl."
 
-LHAPDF_VERSION = "LHAPDF-6.4.0"
+LHAPDF_VERSION = "LHAPDF-6.5.4"
 "Version of LHAPDF to be used by default (if not already available)."
 
 
@@ -298,9 +298,7 @@ def lhapdf_conf(pdf):
 def lhapdf():
     """Install `LHAPDF <https://lhapdf.hepforge.org/>`_ C++ library.
 
-    Not needed:
-        - for `mg5`, since it's vendored
-        - for `yadism`, since we depend on the PyPI version
+    This is currently needed by every tool due to postprocessing requirements.
     """
 
     def installed():
@@ -354,10 +352,14 @@ def update_environ():
 
     lib = configs.configs["paths"]["lib"]
     pyver = ".".join(sys.version.split(".")[:2])
-    prepend(
-        "PYTHONPATH",
-        lib / f"python{pyver}" / "site-packages",
-    )
+
+    # Do both lib and lib64 for python just in case
+    pythonpath = lib / f"python{pyver}" / "site-packages"
+    if not pythonpath.exists():
+        pythonpath = lib.with_name("lib64") / f"python{pyver}" / "site-packages"
+
+    prepend("PYTHONPATH", pythonpath)
+    sys.path.insert(0, pythonpath.as_posix())
     prepend("PATH", configs.configs["paths"]["bin"])
     prepend("LD_LIBRARY_PATH", lib)
     prepend("PKG_CONFIG_PATH", lib / "pkgconfig")

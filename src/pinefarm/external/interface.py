@@ -10,7 +10,7 @@ import tempfile
 
 import pineappl
 
-from .. import __version__, configs, tools
+from .. import __version__, configs, install, tools
 
 
 class External(abc.ABC):
@@ -67,6 +67,8 @@ class External(abc.ABC):
     @staticmethod
     def install():
         """Install all needed programs."""
+        # Everybody needs LHAPDF unless explicitly skipped
+        _ = install.lhapdf()
 
     @abc.abstractmethod
     def run(self):
