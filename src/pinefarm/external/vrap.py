@@ -110,9 +110,8 @@ class Vrap(interface.External):
         yaml_dict = yaml.safe_load(input_card.open("r", encoding="utf-8"))
 
         # If this is a positivity runcard, generate the fake pdf
-        if "positivity_pdf" in yaml_dict:
+        if is_pos := "positivity_pdf" in yaml_dict:
             pdfname = yaml_dict["positivity_pdf"]
-            gen_pos_pdf(pdfname)
             self.pdf = pdfname
             if vrap_order != "NLO":
                 warnings.warn("Positivity DY observables are only computed at NLO")
@@ -122,6 +121,12 @@ class Vrap(interface.External):
 
         self._partial_grids = []
         self._partial_results = []
+        self._is_pos = is_pos
+
+    def _prepare_fake_pdf(self):
+        """Prepare the fake PDF when running a positivity runcard."""
+        if self._is_pos:
+            gen_pos_pdf(self.pdf)
 
     def run(self):
         """Run vrap for the given runcards.
@@ -131,6 +136,8 @@ class Vrap(interface.External):
         The MC results for each run (writen to results.out) will be read.
 
         """
+        self._prepare_fake_pdf()
+
         for b, kin_card in enumerate(self._kin_cards):
             sp.run(
                 [configs.configs["commands"]["vrap"], self._input_card, kin_card],
