@@ -17,8 +17,12 @@ class Yadism(interface.External):
 
     kind = "DIS"
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, pinecard, theorycard, *args, **kwargs):
+        # Default to including scale information unless explicitly avoided
+        theorycard.setdefault("FactScaleVar", True)
+        theorycard.setdefault("RenScaleVar", True)
+        
+        super().__init__(pinecard, theorycard, *args, **kwargs)
 
         # load runcards
         with open(
