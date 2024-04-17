@@ -21,7 +21,7 @@ class Yadism(interface.External):
         # Default to including scale information unless explicitly avoided
         theorycard.setdefault("FactScaleVar", True)
         theorycard.setdefault("RenScaleVar", True)
-        
+
         super().__init__(pinecard, theorycard, *args, **kwargs)
 
         # load runcards
