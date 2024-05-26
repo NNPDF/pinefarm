@@ -25,6 +25,15 @@ def decide_external_tool(dsname: str):
     color:
         color code of the interface
     """
+    # The decisions are usually based on the existence of a `.yaml` file with a specific name
+    # or a prefix in the pinecard
+
+    if dsname.startswith("NNLOJET"):
+        from .nnlojet import NNLOJET
+
+        return NNLOJET, "blue"
+
+    # DIS with yadism
     if (configs["paths"]["runcards"] / dsname / "observable.yaml").exists():
         from . import yad  # pylint: disable=import-outside-toplevel
 
