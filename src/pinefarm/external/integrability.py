@@ -69,8 +69,8 @@ class Integrability(interface.External):
         params = pineappl.subgrid.SubgridParams()
         # Initialize and parametrize grid
         grid = pineappl.grid.Grid.create(luminosities, orders, [0.0, 1.0], params)
-        grid.set_key_value("initial_state_1", str(self._info.hadron_pid))
-        grid.set_key_value("initial_state_2", str(self._info.lepton_pid))
+        grid.set_key_value("convolution_particle_1", str(self._info.hadron_pid))
+        grid.set_key_value("convolution_particle_2", str(self._info.lepton_pid))
         grid.set_key_value("runcard", json.dumps(self._info.asdict()))
         grid.set_key_value("lumi_id_types", "pdg_mc_ids")
         grid.set_key_value("convolution_type_1", self.convolution_type)

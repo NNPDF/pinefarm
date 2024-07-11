@@ -67,8 +67,8 @@ class Positivity(interface.External):
         grid.set_remapper(remapper)
 
         # set the initial state PDF ids for the grid
-        grid.set_key_value("initial_state_1", str(self.hadron_pid))
-        grid.set_key_value("initial_state_2", str(self.lepton_pid))
+        grid.set_key_value("convolution_particle_1", str(self.hadron_pid))
+        grid.set_key_value("convolution_particle_2", str(self.lepton_pid))
         grid.set_key_value("runcard", json.dumps(self.runcard))
         grid.set_key_value("lumi_id_types", "pdg_mc_ids")
         grid.set_key_value("convolution_type_1", self.convolution_type)
