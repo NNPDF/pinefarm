@@ -9,8 +9,8 @@ import pineappl
 from . import tools
 
 
-def convolute_grid(grid, pdf_name, integrated=False):
-    """Call `convolute` via PineAPPL CLI.
+def convolve_grid(grid, pdf_name, integrated=False):
+    """Call `convolve` via PineAPPL CLI.
 
     Parameters
     ----------
@@ -31,7 +31,7 @@ def convolute_grid(grid, pdf_name, integrated=False):
 
     pdf = lhapdf.mkPDF(pdf_name)
     loaded_grid = pineappl.grid.Grid.read(str(grid))
-    pineappl_results = loaded_grid.convolute_with_one(
+    pineappl_results = loaded_grid.convolve_with_one(
         2212, pdf.xfxQ2, pdf.alphasQ2, xi=tools.nine_points
     )
 

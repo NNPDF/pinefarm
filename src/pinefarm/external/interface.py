@@ -81,7 +81,7 @@ class External(abc.ABC):
         Returns
         -------
         str
-            output of ``pineappl convolute`` on the generate grid and selected
+            output of ``pineappl convolve`` on the generate grid and selected
             :attr:`pdf`
 
         """

@@ -123,7 +123,7 @@ def run_dataset(runner):
         runner.generate_pineappl()
 
         table.print_table(
-            table.convolute_grid(
+            table.convolve_grid(
                 runner.grid, runner.pdf, integrated=isinstance(runner, mg5.Mg5)
             ),
             runner.results(),
