@@ -36,7 +36,7 @@ pineappl = "^0.8.2"
 more-itertools = "^8.10.0"
 appdirs = "^1.4.4"
 tomli = "^2.0.1"
-yadism = { extras = ["box"], version = "^0.13.3", optional=true, markers = "python_version < '3.13'" }
+yadism = { extras = ["box"], version = "^0.13.4", optional=true, markers = "python_version < '3.13'" }
 eko = { extras = ["box"], version = "^0.14.2", optional=true, markers = "python_version < '3.13'" }
 nnpdf = { git = "https://github.com/NNPDF/nnpdf", optional = true, markers = "python_version > '3.8'" }
 
