@@ -40,3 +40,10 @@ def lhapdf():
     """Install LHAPDF."""
     install.update_environ()
     install.lhapdf()
+
+
+@subcommand.command()
+def nnlojet():
+    """Install NNLOJET."""
+    install.update_environ()
+    install.nnlojet()
