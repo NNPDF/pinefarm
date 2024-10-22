@@ -11,7 +11,7 @@ In order to get a list of available `pinecards <https://github.com/NNPDF/pinecar
 
 .. code-block:: sh
 
-   pinefarm list pinecards
+   pinefarm list runcards
 
 Recall to set the ``runcards`` parameter in :ref:`pinefarm.toml <install:configure paths>`
 
