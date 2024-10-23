@@ -88,10 +88,10 @@ shared = here / "shared"
 rst_prolog = "\n".join([open(x).read() for x in os.scandir(shared)])
 
 extlinks = {
-    "yadism": ("https://yadism.readthedocs.io/%s", "yadism"),
-    "banana": ("https://banana-hep.readthedocs.io/%s", "banana"),
-    "pineappl": ("https://docs.rs/pineappl/latest/pineappl/%s", "pineappl"),
-    "pineko": ("https://github.com/N3PDF/pineko/%s", "pineko"),
+    "yadism": ("https://yadism.readthedocs.io/%s", "yadism%s"),
+    "banana": ("https://banana-hep.readthedocs.io/%s", "banana%s"),
+    "pineappl": ("https://docs.rs/pineappl/latest/pineappl/%s", "pineappl%s"),
+    "pineko": ("https://github.com/N3PDF/pineko/%s", "pineko%s"),
 }
 
 # -- Options for HTML output -------------------------------------------------
