@@ -42,9 +42,8 @@ eko = { extras = ["box"], version = "^0.14.2", optional=true, markers = "python_
 [tool.poetry.extras]
 dis = ["yadism"]
 vrap = ["eko"]
-nnpdf = ["nnpdf"]
 constraints = ["dis", "vrap"] # integrability + positivity
-complete = ["yadism", "eko", "nnpdf"]
+complete = ["yadism", "eko"]
 
 [tool.poetry.group.docs]
 optional = true

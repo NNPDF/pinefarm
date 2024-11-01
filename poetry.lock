@@ -911,8 +911,8 @@ files = [
 [package.dependencies]
 numpy = [
     {version = ">=1.22.4", markers = "python_version < \"3.11\""},
-    {version = ">=1.23.2", markers = "python_version == \"3.11\""},
     {version = ">=1.26.0", markers = "python_version >= \"3.12\""},
+    {version = ">=1.23.2", markers = "python_version == \"3.11\""},
 ]
 python-dateutil = ">=2.8.2"
 pytz = ">=2020.1"
@@ -1153,8 +1153,8 @@ astroid = ">=3.3.4,<=3.4.0-dev0"
 colorama = {version = ">=0.4.5", markers = "sys_platform == \"win32\""}
 dill = [
     {version = ">=0.2", markers = "python_version < \"3.11\""},
-    {version = ">=0.3.6", markers = "python_version >= \"3.11\" and python_version < \"3.12\""},
     {version = ">=0.3.7", markers = "python_version >= \"3.12\""},
+    {version = ">=0.3.6", markers = "python_version >= \"3.11\" and python_version < \"3.12\""},
 ]
 isort = ">=4.2.5,<5.13.0 || >5.13.0,<6"
 mccabe = ">=0.6,<0.8"
@@ -1728,10 +1728,9 @@ type = ["pytest-mypy"]
 complete = ["eko", "yadism"]
 constraints = []
 dis = ["yadism"]
-nnpdf = []
 vrap = ["eko"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "c0eb2341c4143bc8cd87c6f43a571d66d08827442d117d1588ca71ff8c371fe7"
+content-hash = "f11dc4309afc2bacfef2199fa61a3a112e2bb8222eb09d0bd30aa01aac3a4a96"
