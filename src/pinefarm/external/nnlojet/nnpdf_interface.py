@@ -86,6 +86,7 @@ def _1d_histogram(kin_df, hist_var):
 
 def _nnlojet_observable(observable, process):
     """Try to automatically understand the NNLOJET observables given the NNPDF process and obs."""
+    observable = observable.lower()
     if observable in ("eta", "y", "etay"):
         if process.upper().startswith("Z"):
             return "yz"
@@ -312,6 +313,9 @@ def generate_pinecard_from_nnpdf(nnpdf_dataset, scale="mz", output_path="."):
         hepdata = f"https://doi.org/{hepdata}"
 
     data_comment = f"arXiv number: {arxiv}, hepdata entry: {hepdata} (tables: {tables})"
+    print(
+        f"\033[91m [WARNING] \033[0m Remember to update he selection cuts in the runcard, see {hepdata}"
+    )
 
     # For some NNPDF datasets, different processes/energies might be grouped together
     processes = [process]

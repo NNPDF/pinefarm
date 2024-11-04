@@ -206,7 +206,6 @@ RUN  {runname.upper()}
   scale_coefficients = .true.
   multi_channel = {multi_channel}
   iseed = 1
-  phase_space = qT
   {mode_line}
 END_RUN
 """
