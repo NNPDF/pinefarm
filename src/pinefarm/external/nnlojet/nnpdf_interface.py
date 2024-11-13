@@ -99,7 +99,7 @@ def _nnlojet_observable(observable, process):
             return "ptz"
         if process.upper().startswith("W"):
             return "ptw"
-    if observable == "M" and process.upper().startswith("Z"):
+    if observable == "m" and process.upper().startswith("Z"):
         return "mll"
 
     raise ValueError(f"Observable {observable} not recognized for process {process}")
@@ -226,14 +226,31 @@ def _generate_nnlojet_pinecard(runname, process, energy, experiment, histograms)
     return ret
 
 
-def generate_pinecard_from_nnpdf(nnpdf_dataset, scale="mz", output_path="."):
-    """Generate a NNLOJET pinecard from an NNPDF dataset."""
+def generate_pinecard_from_nnpdf(
+    nnpdf_dataset, scale="mz", output_path=".", observables=None
+):
+    """Generate a NNLOJET pinecard from an NNPDF dataset.
+
+    Takes as input an NNPDF dataset, which will be loaded with the
+    nnpdf_data package.
+
+    If a list of observables is provided, only those in the list will be loaded
+    from the dataframe.
+    """
     # Load the NNPDF dataset
     from validphys.api import API
 
     commondata = API.commondata(dataset_input={"dataset": nnpdf_dataset})
     metadata = commondata.metadata
     kin_df = metadata.load_kinematics(drop_minmax=False)
+
+    if observables is not None:
+        # If a list of observables is provided, select them from the dataframe
+        # list in case they enter as a tuple
+        kin_df = kin_df.loc[:, list(observables)]
+
+    # Change some variable names:
+    kin_df.rename(columns={"m_ll2": "M2"}, inplace=True)
     output_runcards = []
 
     # Put all the information we might need in nicely organized variables
