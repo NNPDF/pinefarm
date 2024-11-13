@@ -1,4 +1,4 @@
-"""Autogenerate pinecardsfrom NNPDF metadata."""
+"""Autogenerate pinecards from NNPDF metadata."""
 
 import click
 import rich
