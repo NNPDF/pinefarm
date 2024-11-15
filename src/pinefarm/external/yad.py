@@ -18,9 +18,14 @@ class Yadism(interface.External):
     kind = "DIS"
 
     def __init__(self, pinecard, theorycard, *args, **kwargs):
+        # Create a copy of the theorycard since we might modify some values
+        theorycard = dict(theorycard)
+
         # Default to including scale information unless explicitly avoided
         theorycard.setdefault("FactScaleVar", True)
         theorycard.setdefault("RenScaleVar", True)
+        if isinstance(theorycard["CKM"], list):
+            theorycard["CKM"] = " ".join(str(i) for i in theorycard["CKM"])
 
         super().__init__(pinecard, theorycard, *args, **kwargs)
 
