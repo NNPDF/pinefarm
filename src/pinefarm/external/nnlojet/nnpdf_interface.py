@@ -20,6 +20,7 @@ Some examples:
 from copy import deepcopy
 
 import numpy as np
+from nnpdf_data import load_dataset_metadata
 from ruamel.yaml import YAML, CommentedMap
 
 # set-up the yaml reader
@@ -32,7 +33,7 @@ HISTOGRAM_VARIABLES = {"y", "etay", "eta", "pT", "pT2", "M2"}
 
 def _legacy_nnpdf_translation(df, proc_type):
     """When reading variables with k1/k2/k3 tries to figure out to which variables it corresponds."""
-    from validphys.filters import KIN_LABEL
+    from validphys.filters import KIN_LABEL  # pylint: disable=E0401
 
     new_vars = list(KIN_LABEL[proc_type])
     # Reorganize a bit the names to avoid extra problems
@@ -61,9 +62,9 @@ def _df_to_bins(dataframe):
         lpo = [mid_points[-1] + shifts[-1]]
         return np.concatenate([fpo, bins, lpo])
 
-    bins = dataframe["min"].tolist()
-    bins.append(dataframe["max"].tolist()[-1])
-    return np.array(bins)
+    # Couple maxs and mins, assuming no overlap between bins...
+    all_bins = np.concatenate([dataframe["min"], dataframe["max"]])
+    return np.unique(all_bins)
 
 
 def _1d_histogram(kin_df, hist_var):
@@ -100,6 +101,9 @@ def _nnlojet_observable(observable, process):
         if process.upper().startswith("W"):
             return "ptw"
     if observable == "m" and process.upper().startswith("Z"):
+        return "mll"
+    if observable == "m2":
+        print("\033[91m [WARNING] \033[0m Changed M2 to M in the selectors")
         return "mll"
 
     raise ValueError(f"Observable {observable} not recognized for process {process}")
@@ -227,7 +231,7 @@ def _generate_nnlojet_pinecard(runname, process, energy, experiment, histograms)
 
 
 def generate_pinecard_from_nnpdf(
-    nnpdf_dataset, scale="mz", output_path=".", observables=None
+    nnpdf_dataset, scale="etz", output_path=".", observables=None
 ):
     """Generate a NNLOJET pinecard from an NNPDF dataset.
 
@@ -237,11 +241,7 @@ def generate_pinecard_from_nnpdf(
     If a list of observables is provided, only those in the list will be loaded
     from the dataframe.
     """
-    # Load the NNPDF dataset
-    from validphys.api import API
-
-    commondata = API.commondata(dataset_input={"dataset": nnpdf_dataset})
-    metadata = commondata.metadata
+    metadata = load_dataset_metadata(nnpdf_dataset)
     kin_df = metadata.load_kinematics(drop_minmax=False)
 
     if observables is not None:
@@ -284,26 +284,37 @@ def generate_pinecard_from_nnpdf(
     if len(hist_vars) == 1:
         histograms = [_1d_histogram(kin_df, hist_vars[0])]
     elif len(hist_vars) == 2:
-        # Let's (hope) it is in M2
-        if "M2" not in hist_vars:
-            raise NotImplementedError(f"Don't know how to do this 2D: {hist_vars}")
-        hist_vars.remove("M2")
 
+        # Let's see whether we know how to do this 2D distribution
+        if "M2" in hist_vars:
+            svar = "M2"
+        elif "y" in hist_vars:
+            svar = "y"
+        else:
+            raise NotImplementedError(f"Don't know how to do this 2D: {hist_vars}")
+        hist_vars.remove(svar)
+
+        # 2D distributions can only be done when min-max is available, otherwise it's a mess
+        bounds_df = kin_df[svar]
+        if svar.endswith("2"):
+            bounds_df[["min", "max"]] = bounds_df[["min", "max"]].apply(
+                lambda x: np.sqrt(x)
+            )
+        bounds = bounds_df.drop_duplicates().values.tolist()
+
+        nnlojet_var = _nnlojet_observable(svar, process)
         another_v = hist_vars[0]
-        # Get the unique M2 values
-        unique_m2 = kin_df["M2"]["mid"].unique()
-        m_name = _nnlojet_observable("M", process)
         histograms = []
-        probable_bounds = np.unique(_1d_histogram(kin_df, "M2")["bins"]).tolist()
-        for i, val in enumerate(unique_m2):
-            idx = kin_df["M2"]["mid"] == val
+
+        for i, (bin_min, mid_val, bin_max) in enumerate(bounds):
+            idx = kin_df[svar]["mid"] == mid_val
             tmp = _1d_histogram(kin_df[idx], another_v)
             tmp["name"] = f"{another_v}_bin_{i}"
             tmp["extra_selectors"] = [
                 {
-                    "observable": f"{m_name}",
-                    "min": probable_bounds[i],
-                    "max": probable_bounds[i + 1],
+                    "observable": f"{nnlojet_var}",
+                    "min": bin_min,
+                    "max": bin_max,
                 }
             ]
             histograms.append(tmp)
