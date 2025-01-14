@@ -70,6 +70,10 @@ class External(abc.ABC):
         # Everybody needs LHAPDF unless explicitly skipped
         _ = install.lhapdf()
 
+    def preparation(self):
+        """Run the preparation method of the runner."""
+        return False
+
     @abc.abstractmethod
     def run(self):
         """Execute the program."""
