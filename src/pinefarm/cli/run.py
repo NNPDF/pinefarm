@@ -1,6 +1,7 @@
 """Compute a dataset and compare using a given PDF."""
 
 import pathlib
+import sys
 import time
 
 import click
@@ -16,7 +17,8 @@ from ._base import command
 @click.argument("dataset")
 @click.argument("theory-path", type=click.Path(exists=True))
 @click.option("--pdf", default="NNPDF31_nlo_as_0118_luxqed")
-def subcommand(dataset, theory_path, pdf):
+@click.option("--dry", is_flag=True, help="Don't execute the underlying code")
+def subcommand(dataset, theory_path, pdf, dry):
     """Compute a dataset and compare using a given PDF.
 
     Given a DATASET name and a THEORY-PATH, a runcard is executed with the
@@ -25,46 +27,58 @@ def subcommand(dataset, theory_path, pdf):
     The given PDF (default: `NNPDF31_nlo_as_0118_luxqed`) will be used to
     compare original results with PineAPPL interpolation.
 
+    Parameters
+    ----------
+        dataset: str
+            dataset name
+        theory: dict
+            theory dictionary
+        pdf: str
+            pdf name
     """
     # read theory card from file
     with open(theory_path) as f:
         theory_card = yaml.safe_load(f)
-    main(dataset, theory_card, pdf)
+        # Fix (possible) problems with CKM matrix loading
+        if isinstance(theory_card.get("CKM"), str):
+            theory_card["CKM"] = [float(i) for i in theory_card["CKM"].split()]
 
-
-def main(dataset, theory, pdf):
-    """Compute a dataset and compare using a given PDF.
-
-    Parameters
-    ----------
-    dataset : str
-        dataset name
-    theory : dict
-        theory dictionary
-    pdf : str
-        pdf name
-
-    """
     dataset = pathlib.Path(dataset).name
     timestamp = None
 
     if "-" in dataset:
+        dataset_raw, timestamp = dataset.rsplit("-", 1)
         try:
-            dataset, timestamp = dataset.split("-")
+            # Check whether the timestamp is really an integer
+            _ = int(timestamp)
+            dataset = dataset_raw
         except ValueError:
-            raise ValueError(
-                f"'{dataset}' not valid. '-' is only allowed once,"
-                " to separate dataset name from timestamp."
-            )
+            timestamp = None
 
     rich.print(dataset)
 
-    datainfo = info.label(dataset)
+    try:
+        datainfo = info.label(dataset)
+    except UnboundLocalError as e:
+        raise UnboundLocalError(f"Runcard {dataset} could not be found") from e
 
     rich.print(f"Computing [{datainfo.color}]{dataset}[/]...")
-    runner = datainfo.external(dataset, theory, pdf, timestamp=timestamp)
+    runner = datainfo.external(dataset, theory_card, pdf, timestamp=timestamp)
 
     install_reqs(runner, pdf)
+
+    # Run the preparation step of the runner (if any)
+    runner_stop = runner.preparation()
+    if dry or runner_stop:
+        rich.print(
+            f"""Running in dry mode, exiting now.
+The preparation step can be found in:
+    {runner.dest}"""
+        )
+        sys.exit(0)
+
+    ###### <this part will eventually go to -prepare->
+
     run_dataset(runner)
 
 
