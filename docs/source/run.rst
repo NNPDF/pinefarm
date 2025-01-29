@@ -113,7 +113,7 @@ the PineAPPL directory, run:
 
 .. code-block:: sh
 
-   APPL_IGRID_DIR=/path/to/applgrid-1.6.27/src cargo install --features=applgrid --path pineappl_cli
+   APPL_IGRID_DIR=/path/to/applgrid-1.6.27/src cargo install --features=applgrid,fastnlo --path pineappl_cli
 
 Once this is done, we can now for example convert a ROOT file into a PineAPPL
 grid by running the following command:
