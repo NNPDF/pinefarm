@@ -14,7 +14,7 @@ classifiers = [
   "Topic :: Scientific/Engineering :: Physics",
   "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
 ]
-repository = "https://github.com/NNPDF/runcards"
+repository = "https://github.com/NNPDF/pinefarm"
 packages = [{ include = "pinefarm", from = "src" }]
 
 [build-system]
