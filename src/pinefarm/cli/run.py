@@ -1,4 +1,4 @@
-"""Compute a dataset and compare using a given PDF."""
+"""Compute a grid and compare using a given PDF."""
 
 import pathlib
 import sys
@@ -8,24 +8,34 @@ import click
 import rich
 import yaml
 
-from .. import info, install, log, table, tools
+from .. import configs, info, install, log, table, tools
 from ..external import mg5
 from ._base import command
 
 
 @command.command("run")
-@click.argument("dataset")
+@click.argument("pinecard")
 @click.argument("theory-path", type=click.Path(exists=True))
-@click.option("--pdf", default="NNPDF31_nlo_as_0118_luxqed")
+@click.option(
+    "--pdf",
+    help="PDF to compare the original results to the grid",
+    default="NNPDF40MC_nnlo_as_01180_qed",
+)
 @click.option("--dry", is_flag=True, help="Don't execute the underlying code")
-def subcommand(dataset, theory_path, pdf, dry):
-    """Compute a dataset and compare using a given PDF.
+def subcommand(pinecard, theory_path, pdf, dry):
+    """Compute the grids as defined in the given pinecard.
 
-    Given a DATASET name and a THEORY-PATH, a runcard is executed with the
-    suitable external (self-determined).
+    Given a PINECARD and a THEORY-PATH, pinefarm will execute the
+    appropiate external program to generate the grids.
 
-    The given PDF (default: `NNPDF31_nlo_as_0118_luxqed`) will be used to
-    compare original results with PineAPPL interpolation.
+    The given PDF will be used to compare the original results (from the generator) with PineAPPL interpolation - this checks any interpolation issues.
+    Setting the DRY flag prevents the generator from actually running.
+
+    Note: not all external programs can be automatically run by pinefarm,
+    in those cases only the relevant run files will be generated.
+    Pinefarm provides a ``finalize`` command to wrap up the grid and add relevant metadata.
+
+    \f
 
     Parameters
     ----------
@@ -36,6 +46,7 @@ def subcommand(dataset, theory_path, pdf, dry):
         pdf: str
             pdf name
     """
+    pinecard = pathlib.Path(pinecard)
     # read theory card from file
     with open(theory_path) as f:
         theory_card = yaml.safe_load(f)
@@ -43,9 +54,11 @@ def subcommand(dataset, theory_path, pdf, dry):
         if isinstance(theory_card.get("CKM"), str):
             theory_card["CKM"] = [float(i) for i in theory_card["CKM"].split()]
 
-    dataset = pathlib.Path(dataset).name
+    # _in principle_ the pinecard is just the name, but a path should also be accepted
+    dataset = pinecard.name
     timestamp = None
 
+    # Sanitize the dataset name
     if "-" in dataset:
         dataset_raw, timestamp = dataset.rsplit("-", 1)
         try:
@@ -63,8 +76,10 @@ def subcommand(dataset, theory_path, pdf, dry):
         raise UnboundLocalError(f"Runcard {dataset} could not be found") from e
 
     rich.print(f"Computing [{datainfo.color}]{dataset}[/]...")
-    runner = datainfo.external(dataset, theory_card, pdf, timestamp=timestamp)
 
+    runner = datainfo.external(
+        dataset, theory_card, pdf, timestamp=timestamp, runcards_path=pinecard.parent
+    )
     install_reqs(runner, pdf)
 
     # Run the preparation step of the runner (if any)

@@ -31,11 +31,16 @@ class External(abc.ABC):
 
     kind = None
 
-    def __init__(self, name, theory, pdf, timestamp=None):
+    def __init__(self, name, theory, pdf, timestamp=None, runcards_path=None):
         self.name = name
         self.theory = theory
         self.pdf = pdf
         self.timestamp = timestamp
+        if runcards_path is None:
+            self._runcards_path = configs.configs["paths"]["runcards"]
+        else:
+            self._runcards_path = pathlib.Path(runcards_path)
+
         if timestamp is None:
             self.dest = tools.create_output_folder(self.name, self.theory["ID"])
         else:
@@ -48,7 +53,7 @@ class External(abc.ABC):
     @property
     def source(self):
         """Runcard base directory."""
-        return configs.configs["paths"]["runcards"] / self.name
+        return self._runcards_path / self.name
 
     @property
     def grid(self):
