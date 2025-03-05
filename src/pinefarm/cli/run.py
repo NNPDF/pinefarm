@@ -54,7 +54,7 @@ def subcommand(pinecard, theory_path, pdf, dry):
         if isinstance(theory_card.get("CKM"), str):
             theory_card["CKM"] = [float(i) for i in theory_card["CKM"].split()]
 
-    # _in principle_ the pinecard is just the name, but a path should also accepted
+    # _in principle_ the pinecard is just the name, but a path should also be accepted
     dataset = pinecard.name
     timestamp = None
 
