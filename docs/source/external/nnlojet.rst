@@ -24,9 +24,9 @@ This folder contains two files, a ``.yaml`` file, which defines the run, and a `
 Running with NNLOJET
 --------------------
 
-The most common use-case of NNLOJET is to generate NNLO grids running in a cluster.
-Distributed job management is beyond the scope of ``pinefarm``, so we you run a NNLOJET pinecard what you get is
-all the preparatory step up to the NNLOJET runcard that then you can submit with the official NNLOJET workflow: `dokan <https://github.com/aykhuss/dokan>`,
+The most common use-case of NNLOJET is the generation of NNLO grids, for which running in a cluster is necessary.
+Job management is beyond the scope of ``pinefarm``, therefore the ``run`` command will only go through the preparatory steps
+to set up the NNLOJET runcard which can be submitted using the official NNLOJET workflow: `dokan <https://github.com/aykhuss/dokan>`,
 or manually (if that's your thing).
 
 

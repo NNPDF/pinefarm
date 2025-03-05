@@ -27,7 +27,7 @@ def subcommand(pinecard, theory_path, pdf, dry):
 
     Given a PINECARD and a THEORY-PATH, pinefarm will execute the
     appropiate external program to generate the grids.
-    
+
     The given PDF will be used to compare the original results (from the generator) with PineAPPL interpolation - this checks any interpolation issues.
     Setting the DRY flag prevents the generator from actually running.
 
