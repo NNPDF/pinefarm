@@ -1,4 +1,4 @@
-"""Compute a pinecard and compare using a given PDF."""
+"""Compute a grid and compare using a given PDF."""
 
 import pathlib
 import sys
