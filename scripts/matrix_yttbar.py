@@ -9,6 +9,9 @@ A Python script that takes a Grid binned in Rapidity and perform the following o
 
 To use, check `python ./matrix_yttbar.py --help`, or directly run:
     `python ./matrix_yttbar.py -g <path_to_grid> -o <output_name>`
+
+To run the check, use `pytest`:
+    `pytest ./matrix_yttbar.py`
 """
 import numpy as np
 import pineappl
@@ -19,6 +22,56 @@ class InvalidPineAPPL(Exception):
     """Check whether the PineAPPL version is valid."""
 
     pass
+
+
+class TestReverseBins:
+    def fake_grid(self, bins=None) -> pineappl.grid.Grid:
+        """Generate a fake PineAPPL grid."""
+        lumis = [pineappl.lumi.LumiEntry([(1, i, 1)]) for i in range(-3, 3)]
+        orders = [pineappl.grid.Order(i, 0, 0, 0) for i in range(3)]
+        binning = np.array([1e-7, 1e-3] if bins is None else bins, dtype=float)
+
+        subgrid_params = pineappl.subgrid.SubgridParams()
+        grid = pineappl.grid.Grid.create(lumis, orders, binning, subgrid_params)
+
+        # Fill the Grid with some random weights
+        for b in range(binning.size - 1):
+            for o in range(len(orders)):
+                for c in range(len(lumis)):
+                    x1s = np.logspace(0.1, 1, num=10)
+                    x2s = np.logspace(0.5, 1, num=10)
+                    q2s = np.logspace(10, 20, num=10)
+                    sub_array = np.random.uniform(
+                        2, 6, size=(q2s.size, x1s.size, x2s.size)
+                    )
+                    mu2_scales = [(q2, q2) for q2 in q2s]
+                    subgrid_obj = pineappl.import_only_subgrid.ImportOnlySubgridV2(
+                        array=sub_array,
+                        mu2_grid=mu2_scales,
+                        x1_grid=x1s,
+                        x2_grid=x2s,
+                    )
+                    grid.set_subgrid(o, b, c, subgrid=subgrid_obj)
+
+        return grid
+
+    def test_reverse_bins(self):
+        ref_grid = self.fake_grid(bins=[0.5, 1.0, 1.5, 2.0])
+        mod_grid = reverse_bins(grid=ref_grid)
+
+        # Convolve the Grids with some fake PDFs
+        ref_preds = ref_grid.convolve_with_one(
+            pdg_id=2212,
+            xfx=lambda pid, x, q2: x,
+            alphas=lambda q2: 1.0,
+        )
+        mod_preds = mod_grid.convolve_with_one(
+            pdg_id=2212,
+            xfx=lambda pid, x, q2: x,
+            alphas=lambda q2: 1.0,
+        )
+        # NOTE: predictions are expected to differ by `1/2`
+        np.testing.assert_allclose(ref_preds / 2, mod_preds[::-1])
 
 
 def check_obsdims(grid: pineappl.grid.Grid) -> None:
