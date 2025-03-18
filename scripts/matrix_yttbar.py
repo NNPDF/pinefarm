@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
- 
-"""
-    A Python script that takes a Grid binned in Rapidity and perform the following operations:
-        - extract the negative rapidity bins and divide the observable predictions by 2
-        - extract the positive rapidity bins and divide the observable predictions by 2
-        - re-order the negative rapidity bin predictions to conform with the commondata
-        - merge the two Grids
 
-    To use, check `python ./matrix_yttbar.py --help`, or directly run:
-        `python ./matrix_yttbar.py -g <path_to_grid> -o <output_name>`
 """
-import pineappl
+A Python script that takes a Grid binned in Rapidity and perform the following operations:
+    - extract the negative rapidity bins and divide the observable predictions by 2
+    - extract the positive rapidity bins and divide the observable predictions by 2
+    - re-order the negative rapidity bin predictions to conform with the commondata
+    - merge the two Grids
+
+To use, check `python ./matrix_yttbar.py --help`, or directly run:
+    `python ./matrix_yttbar.py -g <path_to_grid> -o <output_name>`
+"""
 import numpy as np
+import pineappl
 import rich_click as click
 
 
@@ -23,11 +23,15 @@ class InvalidPineAPPL(Exception):
 
 def check_obsdims(grid: pineappl.grid.Grid) -> None:
     """Check that the observable is binned in one dimension only."""
-    assert grid.bin_dimensions() == 1, "The observable is binned in multiple dimensions."
+    assert (
+        grid.bin_dimensions() == 1
+    ), "The observable is binned in multiple dimensions."
     return
 
 
-def modify_grids(grid: pineappl.grid.Grid, positive_sign: bool = True, norm: float = 1.0) -> None:
+def modify_grids(
+    grid: pineappl.grid.Grid, positive_sign: bool = True, norm: float = 1.0
+) -> None:
     """Rewrite the bin and observable contents of the Grid"""
     sign: int = 1 if positive_sign else (-1)
     modified_rap_bins = [
@@ -35,7 +39,9 @@ def modify_grids(grid: pineappl.grid.Grid, positive_sign: bool = True, norm: flo
         for left, right in zip(sign * grid.bin_left(0), sign * grid.bin_right(0))
     ]
 
-    remapper = pineappl.bin.BinRemapper(norm * grid.bin_normalizations(), modified_rap_bins)
+    remapper = pineappl.bin.BinRemapper(
+        norm * grid.bin_normalizations(), modified_rap_bins
+    )
     grid.set_remapper(remapper)
     return
 
@@ -80,7 +86,9 @@ def reverse_bins(grid: pineappl.grid.Grid) -> pineappl.grid.Grid:
     return new_grid
 
 
-def merge_bins(grid1: pineappl.grid.Grid, grid2: pineappl.grid.Grid, outname: str) -> None:
+def merge_bins(
+    grid1: pineappl.grid.Grid, grid2: pineappl.grid.Grid, outname: str
+) -> None:
     """Merge two grids with different bins"""
     grid1.merge(grid2)
     grid1.write_lz4(f"{outname}.pineappl.lz4")
