@@ -8,7 +8,7 @@ c     cut on the transverse mass of W bosons
      &                      (p(1,j)**2+p(2,j)**2))-
      &             2d0*(p(1,i)*p(1,j)+p(2,i)*p(2,j))
               if (xmtw.lt.(({})**2)) then
-                passcuts_user=.false.
+                passcuts_leptons=.false.
                 return
               endif
             endif
