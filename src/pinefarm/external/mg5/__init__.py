@@ -256,7 +256,7 @@ class Mg5(interface.External):
         version_file = os.path.join(mg5_path, "VERSION")
 
         if os.path.exists(version_file):
-            with open(version_file, "r") as f:
+            with open(version_file) as f:
                 versions["mg5amc_version"] = f.read().strip()
         else:
             print(f"Warning: VERSION file not found at {version_file}")
