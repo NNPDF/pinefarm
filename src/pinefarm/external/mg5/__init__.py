@@ -1,9 +1,9 @@
 """Madgraph interface."""
 
 import json
+import os
 import re
 import subprocess
-import os
 
 import numpy as np
 import pandas as pd
