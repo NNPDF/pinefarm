@@ -316,7 +316,7 @@ def apply_user_cuts(cuts_file, user_cuts, jet=False):
     marker_pos = find_marker_position(cut_marker_str, contents)
     # skip some lines with comments
     marker_pos = marker_pos + 1
-    # insert and empty line
+    # insert an empty line
     contents.insert(marker_pos - 1, "\n")
 
     cut_code_path = paths.cuts_code / "jet" if jet else paths.cuts_code / "lepton"
