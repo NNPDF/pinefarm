@@ -28,7 +28,7 @@ The most common use-case of NNLOJET is the generation of NNLO grids, for which r
 Job management is beyond the scope of ``pinefarm`` and users are discouraged to run NNLOJET manually.
 Instead, the official workflow must be used as described in the `NNLOJET documentation <https://nnlojet.hepforge.org/>`_
 
-In order to obtain a NNLOJET runcard that can be used together with the workflod, use:
+In order to obtain a NNLOJET runcard that can be used together with the workflof, use:
 
 ::
 
@@ -37,3 +37,11 @@ In order to obtain a NNLOJET runcard that can be used together with the workflod
 
 Where theory must be a yaml file defining the parameters of the theory, e.g., `this one <https://github.com/NNPDF/pinefarm/blob/main/extras/theories/theory_nnlo.yaml>`_.
 This last will create a folder in the ``paths::results`` folder named ``<theory ID>_<dataset>_<timestamp>``.
+
+In most cases (and all for which a ``postrun.sh`` is provided) it will be necessary to run
+the finalize step `after` the NNLOJET calculation has finished.
+For that add the ``--finalize`` flag, pointing to the appropriate run folder.
+
+::
+
+    pinefarm run <pinecard name> <theory> --finalize <runfolder>

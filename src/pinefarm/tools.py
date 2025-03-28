@@ -207,7 +207,10 @@ def set_grid_metadata(grid, entries=None, entries_from_file=None):
         entries_from_file = {}
 
     for k, v in entries.items():
-        grid.set_key_value(k, v)
+        if hasattr(grid, "set_key_value"):
+            grid.set_key_value(k, v)
+        else:  # pineappl 1.0 preparation
+            grid.set_metadata(k, v)
 
     for k, v in entries_from_file.items():
         with open(v) as fd:

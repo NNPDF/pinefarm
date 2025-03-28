@@ -26,12 +26,16 @@ class External(abc.ABC):
         PDF name
     timestamp : str
         timestamp of already generated output folder
+    output_folder : pathlib.Path
+        path of the already generated output folder
 
     """
 
     kind = None
 
-    def __init__(self, name, theory, pdf, timestamp=None, runcards_path=None):
+    def __init__(
+        self, name, theory, pdf, timestamp=None, runcards_path=None, output_folder=None
+    ):
         self.name = name
         self.theory = theory
         self.pdf = pdf
@@ -41,8 +45,17 @@ class External(abc.ABC):
         else:
             self._runcards_path = pathlib.Path(runcards_path)
 
-        if timestamp is None:
+        if timestamp is None and output_folder is None:
             self.dest = tools.create_output_folder(self.name, self.theory["ID"])
+        elif timestamp is None:
+            # If an output_folder is present, it takes precedence with respect to the timestamp
+            self.dest = output_folder
+            self.timestamp = output_folder.as_posix().split("-")[-1]
+            if (
+                not self.grid.exists()
+                and self.grid.with_suffix(".pineappl.lz4").exists()
+            ):
+                tools.decompress(self.grid.with_suffix(".pineappl.lz4"))
         else:
             self.dest = configs.configs["paths"]["results"] / (
                 str(theory["ID"]) + "-" + self.name + "-" + self.timestamp
@@ -65,9 +78,11 @@ class External(abc.ABC):
         """Intermediate PineAPPL grid name."""
         return self.dest / f"{self.name}.pineappl.tmp"
 
-    def update_with_tmp(self):
+    def update_with_tmp(self, output_grid=None):
         """Move intermediate grid to final position."""
-        shutil.move(str(self.gridtmp), str(self.grid))
+        if output_grid is None:
+            output_grid = self.grid
+        shutil.move(str(self.gridtmp), str(output_grid))
 
     @staticmethod
     def install():
@@ -149,24 +164,52 @@ class External(abc.ABC):
         self.update_with_tmp()
 
     def postprocess(self):
-        """Postprocess grid."""
-        # add metadata
+        """Postprocess grid(s).
+
+        First run the postrun.sh script (if present),
+        then apply metadata to all grids present in the folder.
+
+        The following environment variables will be populated for the
+        underlying scripts to use:
+            GRID: if only one grid is available, path to the grid
+            PINECARD: path to the pinecard folder
+        """
+        if self.grid.exists():
+            os.environ["GRID"] = str(self.grid)
+            grids = [self.grid]
+        else:
+            grids = list(self.dest.glob("*.pineappl*"))
+
+        if not grids:
+            raise ValueError("Tried to run postprocessing in a folder with no grids?")
+
+        os.environ["PINECARD"] = self.source.as_posix()
+
+        # apply postrun, if present and executable
+        postrun = self.source / "postrun.sh"
+        if postrun.exists():
+            if os.access(postrun, os.X_OK):
+                shutil.copy2(self.source / "postrun.sh", self.dest)
+                subprocess.run("./postrun.sh", cwd=self.dest, check=True)
+            else:
+                raise ValueError(f"Postrun file present but not executable: {postrun}")
+
+        # Add the metadata to *every single grid in the folder*
+        # some of these might be just intermediate, apply it anyway
         metadata = self.source / "metadata.txt"
         entries = {}
         if metadata.exists():
             for line in metadata.read_text().splitlines():
                 k, v = line.split("=")
                 entries[k] = v
-        tools.update_grid_metadata(self.grid, self.gridtmp, entries)
-        self.update_with_tmp()
 
-        # apply postrun, if present
-        if os.access((self.source / "postrun.sh"), os.X_OK):
-            shutil.copy2(self.source / "postrun.sh", self.dest)
-            os.environ["GRID"] = str(self.grid)
-            subprocess.run("./postrun.sh", cwd=self.dest, check=True)
+        for ext in ["*.pineappl.lz4", "*.pineappl"]:
+            for grid in self.dest.glob(ext):
+                tools.update_grid_metadata(grid, self.gridtmp, entries)
+                self.update_with_tmp(grid)
 
-        # compress
-        compressed_path = tools.compress(self.grid)
-        if compressed_path.exists():
-            self.grid.unlink()
+        # compress if we have a single grid
+        if self.grid.exists():
+            compressed_path = tools.compress(self.grid)
+            if compressed_path.exists():
+                self.grid.unlink()
