@@ -1,6 +1,7 @@
 """Madgraph interface."""
 
 import json
+import pathlib
 import re
 import subprocess
 
@@ -14,7 +15,7 @@ from . import paths
 
 URL = "https://launchpad.net/mg5amcnlo/{major}.0/{major}.{minor}.x/+download/MG5_aMC_v{version}.tar.gz"
 "URL template for MG5aMC\\@NLO release"
-VERSION = "3.4.2"
+VERSION = "3.6.2"
 "Version in use"
 CONVERT_MODEL = """
 set auto_convert_model True
@@ -36,7 +37,8 @@ class Mg5(interface.External):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.user_cuts = []
+        self.user_jet_cuts = []
+        self.user_lepton_cuts = []
         self.patches = []
         self.tau_min = None
 
@@ -114,13 +116,33 @@ class Mg5(interface.External):
         user_cuts_pattern = re.compile(
             r"^#user_defined_cut set (\w+)\s+=\s+([+-]?\d+(?:\.\d+)?|True|False)$"
         )
+
+        # Load cut type dictionary
+        cut_type_file = paths.subpkg / "cut_type.json"
+        with open(cut_type_file) as f:
+            cut_type_map = json.load(f)
+
         for line in launch.splitlines():
-            m = re.fullmatch(user_cuts_pattern, line)
-            if m is not None:
-                self.user_cuts.append((m[1], m[2]))
+            if m := user_cuts_pattern.fullmatch(line):
+                cut_name, cut_value = m[1], m[2]
+                cut_type = cut_type_map.get(cut_name)
+
+                if cut_type == "lepton":
+                    self.user_lepton_cuts.append((cut_name, cut_value))
+                elif cut_type == "jet":
+                    self.user_jet_cuts.append((cut_name, cut_value))
+                else:
+                    print(
+                        f"\033[93m[WARNING]\033[0m Unknown cut type for '{cut_name}', ignoring."
+                    )
 
         # if there are user-defined cuts, implement them
-        apply_user_cuts(self.mg5_dir / "SubProcesses" / "cuts.f", self.user_cuts)
+        # we now distinguish between lepton and jet cuts
+        mg5_cut_dir = self.mg5_dir / "SubProcesses" / "cuts.f"
+        if len(self.user_lepton_cuts) != 0:
+            apply_user_cuts(mg5_cut_dir, self.user_lepton_cuts)
+        if len(self.user_jet_cuts) != 0:
+            apply_user_cuts(mg5_cut_dir, self.user_jet_cuts, jet=True)
 
         # parse launch file for user-defined minimum tau
         user_taumin_pattern = re.compile(r"^#user_defined_tau_min (.*)")
@@ -204,7 +226,12 @@ class Mg5(interface.External):
             "tau_min", str(self.tau_min) if self.tau_min is not None else ""
         )
         grid.set_key_value(
-            "user_cuts", "\n".join(f"{var}={value}" for var, value in self.user_cuts)
+            "user_lepton_cuts",
+            "\n".join(f"{var}={value}" for var, value in self.user_lepton_cuts),
+        )
+        grid.set_key_value(
+            "user_jet_cuts",
+            "\n".join(f"{var}={value}" for var, value in self.user_jet_cuts),
         )
 
         grid.write(str(self.grid))
@@ -230,31 +257,17 @@ class Mg5(interface.External):
         return df
 
     def collect_versions(self):
-        """Add versions."""
+        """Collect MG5aMC version info from static VERSION file."""
         versions = {}
-        versions["mg5amc_revno"] = (
-            subprocess.run(
-                "brz revno".split(),
-                cwd=configs.configs["paths"]["mg5amc"],
-                stdout=subprocess.PIPE,
-            )
-            .stdout.decode()
-            .strip()
-        )
-        mg5amc_repo = (
-            subprocess.run(
-                "brz info".split(),
-                cwd=configs.configs["paths"]["mg5amc"],
-                stdout=subprocess.PIPE,
-            )
-            .stdout.decode()
-            .strip()
-        )
+        mg5_path = configs.configs["paths"]["mg5amc"]
+        version_file = mg5_path / "VERSION"  # assuming mg5_path is already a Path
 
-        repo = re.search(r"\s*parent branch:\s*(.*)", mg5amc_repo)
-        if repo is None:
-            print("Invalid mg5 repository")
-        versions["mg5amc_repo"] = repo[1] if repo is not None else None
+        if version_file.exists():
+            versions["mg5amc_version"] = version_file.read_text().strip()
+        else:
+            print(f"Warning: VERSION file not found at {version_file}")
+            versions["mg5amc_version"] = None
+
         return versions
 
 
@@ -275,26 +288,38 @@ def find_marker_position(insertion_marker, contents):
     return marker_pos
 
 
-def apply_user_cuts(cuts_file, user_cuts):
+def apply_user_cuts(cuts_file, user_cuts, jet=False):
     """Apply a user defined cut, patching a suitable cuts file."""
     with open(cuts_file) as fd:
         contents = fd.readlines()
 
     # insert variable declaration
-    marker_pos = find_marker_position("logical function passcuts_user", contents)
-    marker_pos = marker_pos + 8
+    variable_marke_name = (
+        "logical function passcuts_jets" if jet else "logical function passcuts_leptons"
+    )
+    rel_pos = 9 if jet else 7
+    marker_pos = find_marker_position(variable_marke_name, contents)
+    marker_pos = marker_pos + rel_pos
 
-    for fname in paths.cuts_variables.iterdir():
+    cut_variable_path = (
+        paths.cuts_variables / "jet" if jet else paths.cuts_variables / "lepton"
+    )
+    for fname in cut_variable_path.iterdir():
         name = fname.stem
         if any(i[0].startswith(name) for i in user_cuts):
             contents.insert(marker_pos, fname.read_text())
 
-    marker_pos = find_marker_position("USER-DEFINED CUTS", contents)
+    # where to place the cuts
+    cut_marker_str = (
+        "c Apply the jet cuts" if jet else "c apply the charged lepton cuts"
+    )
+    marker_pos = find_marker_position(cut_marker_str, contents)
     # skip some lines with comments
-    marker_pos = marker_pos + 4
-    # insert and empty line
+    marker_pos = marker_pos + 1
+    # insert an empty line
     contents.insert(marker_pos - 1, "\n")
 
+    cut_code_path = paths.cuts_code / "jet" if jet else paths.cuts_code / "lepton"
     for name, value in reversed(user_cuts):
         # map to fortran syntax
         if value == "True":
@@ -309,7 +334,7 @@ def apply_user_cuts(cuts_file, user_cuts):
 
             value = value + "d0"
 
-        code = (paths.cuts_code / f"{name}.f").read_text().format(value)
+        code = (cut_code_path / f"{name}.f").read_text().format(value)
         contents.insert(marker_pos, code)
 
     with open(cuts_file, "w") as fd:
