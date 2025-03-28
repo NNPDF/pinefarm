@@ -11,7 +11,7 @@ import pineappl
 
 from ... import configs, install, log, tools
 from .. import interface
-from . import paths
+from . import cuts, paths
 
 URL = "https://launchpad.net/mg5amcnlo/{major}.0/{major}.{minor}.x/+download/MG5_aMC_v{version}.tar.gz"
 "URL template for MG5aMC\\@NLO release"
@@ -113,29 +113,31 @@ class Mg5(interface.External):
         launch_file.write_text(launch)
 
         # parse launch file for user-defined cuts
-        user_lepton_cuts_pattern = re.compile(
-            r"^#user_defined_lepton_cut set (\w+)\s+=\s+([+-]?\d+(?:\.\d+)?|True|False)$"
-        )
-        for line in launch.splitlines():
-            m = re.fullmatch(user_lepton_cuts_pattern, line)
-            if m is not None:
-                self.user_lepton_cuts.append((m[1], m[2]))
-
-        user_jet_cuts_pattern = re.compile(
-            r"^#user_defined_jet_cut set (\w+)\s+=\s+([+-]?\d+(?:\.\d+)?|True|False)$"
+        user_cuts_pattern = re.compile(
+            r"^#user_defined_cut set (\w+)\s+=\s+([+-]?\d+(?:\.\d+)?|True|False)$"
         )
 
         for line in launch.splitlines():
-            m = re.fullmatch(user_jet_cuts_pattern, line)
-            if m is not None:
-                self.user_jet_cuts.append((m[1], m[2]))
+            if m := user_cuts_pattern.fullmatch(line):
+                cut_name, cut_value = m[1], m[2]
+                cut_type = cuts.cut_type_map.get(cut_name)
+
+                if cut_type == "lepton":
+                    self.user_lepton_cuts.append((cut_name, cut_value))
+                elif cut_type == "jet":
+                    self.user_jet_cuts.append((cut_name, cut_value))
+                else:
+                    print(
+                        f"\033[93m[WARNING]\033[0m Unknown cut type for '{cut_name}', ignoring."
+                    )
 
         # if there are user-defined cuts, implement them
         # we now distinguish between lepton and jet cuts
-        apply_user_cuts(self.mg5_dir / "SubProcesses" / "cuts.f", self.user_lepton_cuts)
-        apply_user_cuts(
-            self.mg5_dir / "SubProcesses" / "cuts.f", self.user_jet_cuts, jet=True
-        )
+        mg5_cut_dir = self.mg5_dir / "SubProcesses" / "cuts.f"
+        if len(self.user_lepton_cuts) != 0:
+            apply_user_cuts(mg5_cut_dir, self.user_lepton_cuts)
+        if len(self.user_jet_cuts) != 0:
+            apply_user_cuts(mg5_cut_dir, self.user_jet_cuts, jet=True)
 
         # parse launch file for user-defined minimum tau
         user_taumin_pattern = re.compile(r"^#user_defined_tau_min (.*)")
