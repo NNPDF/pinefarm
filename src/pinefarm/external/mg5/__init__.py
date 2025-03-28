@@ -1,6 +1,7 @@
 """Madgraph interface."""
 
 import json
+import pathlib
 import re
 import subprocess
 
@@ -10,7 +11,7 @@ import pineappl
 
 from ... import configs, install, log, tools
 from .. import interface
-from . import cuts, paths
+from . import paths
 
 URL = "https://launchpad.net/mg5amcnlo/{major}.0/{major}.{minor}.x/+download/MG5_aMC_v{version}.tar.gz"
 "URL template for MG5aMC\\@NLO release"
@@ -116,10 +117,15 @@ class Mg5(interface.External):
             r"^#user_defined_cut set (\w+)\s+=\s+([+-]?\d+(?:\.\d+)?|True|False)$"
         )
 
+        # Load cut type dictionary
+        cut_type_file = paths.subpkg / "cut_type.json"
+        with open(cut_type_file) as f:
+            cut_type_map = json.load(f)
+
         for line in launch.splitlines():
             if m := user_cuts_pattern.fullmatch(line):
                 cut_name, cut_value = m[1], m[2]
-                cut_type = cuts.cut_type_map.get(cut_name)
+                cut_type = cut_type_map.get(cut_name)
 
                 if cut_type == "lepton":
                     self.user_lepton_cuts.append((cut_name, cut_value))
