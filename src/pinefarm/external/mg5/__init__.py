@@ -1,7 +1,6 @@
 """Madgraph interface."""
 
 import json
-import os
 import re
 import subprocess
 
@@ -255,11 +254,10 @@ class Mg5(interface.External):
         """Collect MG5aMC version info from static VERSION file."""
         versions = {}
         mg5_path = configs.configs["paths"]["mg5amc"]
-        version_file = os.path.join(mg5_path, "VERSION")
+        version_file = mg5_path / "VERSION"  # assuming mg5_path is already a Path
 
-        if os.path.exists(version_file):
-            with open(version_file) as f:
-                versions["mg5amc_version"] = f.read().strip()
+        if version_file.exists():
+            versions["mg5amc_version"] = version_file.read_text().strip()
         else:
             print(f"Warning: VERSION file not found at {version_file}")
             versions["mg5amc_version"] = None
