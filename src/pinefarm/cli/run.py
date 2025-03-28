@@ -77,9 +77,7 @@ def subcommand(pinecard, theory_path, pdf, dry):
 
     rich.print(f"Computing [{datainfo.color}]{dataset}[/]...")
 
-    runner = datainfo.external(
-        dataset, theory_card, pdf, timestamp=timestamp, runcards_path=pinecard.parent
-    )
+    runner = datainfo.external(dataset, theory_card, pdf, timestamp=timestamp)
     install_reqs(runner, pdf)
 
     # Run the preparation step of the runner (if any)

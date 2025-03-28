@@ -100,6 +100,7 @@ class YamlLOJET:
     multi_channel: int = 3
     techcut: float = 1e-7
     pdf: str = "NNPDF40_nnlo_as_01180"
+    manual: bool = False
 
     def __post_init__(self):
         self.histograms = [Histogram(**i) for i in self.histograms]
@@ -294,14 +295,12 @@ def generate_runcard(
     events: int = int(1e4),
     iterations: int = 1,
     output=Path("."),
+    runcard_path=None,
 ):
     """Generate a NNLOJET runcard given the metadata of the run in the folder defined by che channel name.
 
     The output path of the runcard will be ./channel/runcard_name_{warmup/production}.run.
     """
-    channel_dir = output / channel
-    channel_dir.mkdir(exist_ok=True)
-
     region_str = region_str_generator(channel)
 
     if is_warmup:
@@ -317,7 +316,6 @@ def generate_runcard(
         metadata.pdf
     )  # we can even check whether this needs to be installed before running!
 
-    runcard_path = channel_dir / f"{runcard_name}_{mode_str}.run"
     runcard_text = HEADER
 
     runcard_text += _fill_process(metadata.process)
@@ -333,6 +331,12 @@ def generate_runcard(
     runcard_text += _fill_histograms(metadata, empty=is_warmup)
     runcard_text += _fill_scales(metadata.scales)
     runcard_text += _fill_channels(channels, region_str=region_str)
+
+    if runcard_path is None:
+        channel_dir = output / channel
+        channel_dir.mkdir(exist_ok=True)
+        runcard_path = channel_dir / f"{runcard_name}_{mode_str}.run"
+
     runcard_path.write_text(runcard_text)
 
     logger.info(f"Runcard written to {runcard_path}")
