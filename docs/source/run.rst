@@ -14,6 +14,10 @@ To generate a |pineappl| grid run:
 
    pinefarm run <PINECARD> <THEORYCARD>
 
+It is posible to modify the behaviour of the ``run`` command with the ``--dry`` and ``--finalize`` flags.
+In the first case, ``--dry``, will run the preparation step without running the interface.
+``--finalize`` instead takes a path to a previous run and executes the postprocessing step on it.
+
 In order to get a list of available `pinecards <https://github.com/NNPDF/pinecards>`_ run:
 
 .. code-block:: sh
