@@ -4,6 +4,9 @@ NNLOJET
 NNLOJET is a multipurpose parton-level Monte Carlo generator which can compute several different process at NNLO in QCD using the antenna subtraction method.
 While at the moment the code is private, ``pinefarm`` provides an interface to autogenerate ``pinecards`` from NNPDF datasets and NNLOJET runcards from pinefarm ``pinecards``.
 
+The installation of NNLOJET is *not* automatized by ``pinefarm`` as it won't be run by ``pinefarm`` which will only prepare the runcards.
+Please follow the `installation instructions <https://nnlojet.hepforge.org/manual3.html>`_.
+
 Generating a pinecard
 ---------------------
 
@@ -26,7 +29,7 @@ Running with NNLOJET
 
 The most common use-case of NNLOJET is the generation of NNLO grids, for which running in a cluster is necessary.
 Job management is beyond the scope of ``pinefarm`` and users are discouraged to run NNLOJET manually.
-Instead, the official workflow must be used as described in the `NNLOJET documentation <https://nnlojet.hepforge.org/>`_
+Instead, the official workflow must be used as described in the `NNLOJET documentation <https://nnlojet.hepforge.org/manual6.html>`_
 
 In order to obtain a NNLOJET runcard that can be used together with the workflof, use:
 

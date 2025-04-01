@@ -53,19 +53,58 @@ class Histogram:
     name: str
     observable: str
     bins: list
-    extra_selectors: list = None
+    extra_selectors: dict = None
     pineappl: bool = True
+    fac: int = None
+    compositions: list[dict] = field(default_factory=list)
 
-    def to_str(self):  # noqa: D102
+    def __post_init__(self):
+        # Check for compositeness
+        if self.observable.upper() == "COMPOSITE" and not self.compositions:
+            raise ValueError("Observable is COMPOSITE but no composition found")
+        if self.observable.upper() != "COMPOSITE" and self.compositions:
+            raise ValueError(
+                f"Composition found but the observable is not 'composite' ({self.observable})"
+            )
+
+        # Make the composition into histogram classes
+        diggested_composition = []
+        for comp in self.compositions:
+            diggested_composition.append(
+                Histogram(**comp, bins=[None], name=None, pineappl=False)
+            )
+        self.compositions = diggested_composition
+
+    def histogram_selectors_to_str(self, base_indentation=INDT):
+        """Make the histogram selectors into a single string."""
+        selectors = [Selector(**i) for i in self.extra_selectors]
+        hstr = f"\n{base_indentation}HISTOGRAM_SELECTORS\n"
+        hstr += f"\n".join(f"{base_indentation}{INDT}{i.to_str()}" for i in selectors)
+        hstr += f"\n{base_indentation}END_HISTOGRAM_SELECTORS\n"
+        return hstr
+
+    def to_str(self):
+        """Turn the histogram into a NNLOJET-compatible string."""
         hstr = f"{INDT}{self.observable} > {self.name} {self.bins}"
+
         if self.pineappl:
-            hstr += " grid=pine"
+            hstr += f" grid={self.name}.pine"
+        if self.fac is not None:
+            hstr += f" fac={self.fac}"
 
         if self.extra_selectors is not None:
-            selectors = [Selector(**i) for i in self.extra_selectors]
-            hstr += f"\n{INDT}HISTOGRAM_SELECTORS\n{INDT*2}"
-            hstr += f"\n{INDT*2}".join(i.to_str() for i in selectors)
-            hstr += f"\n{INDT}END_HISTOGRAM_SELECTORS\n"
+            hstr += self.histogram_selectors_to_str()
+        else:
+            hstr += "\n"
+
+        for composition in self.compositions:
+            hstr += f"{INDT*2}{composition.observable}"
+            if composition.fac is not None:
+                hstr += f" fac={composition.fac}"
+            hstr += composition.histogram_selectors_to_str(base_indentation=INDT * 2)
+        if self.compositions:
+            hstr += f"{INDT}END_COMPOSITE\n"
+
         return hstr
 
 
