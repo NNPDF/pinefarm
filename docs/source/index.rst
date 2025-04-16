@@ -9,6 +9,7 @@ We currently support:
 
 - |mg5i| |mg5| :cite:`Alwall:2014hca` :cite:`Frederix:2018nkq`
 - |yadismi| |yadism| :cite:`yadism`
+- NNLOJET :cite:`nnlojet`
 - Hawaiian Vrap :cite:`Barontini:2023vmr` (a modified version of Vrap :cite:`Anastasiou:2003ds`)
 - PDF positivity observables :cite:`Candido:2020yat,Collins:2021vke,Candido:2023ujx`
 - PDF integrability observables
@@ -62,6 +63,7 @@ and the program will, if necessary, install the required external program and la
    external/index
    external/mg5
    external/yadism
+   external/nnlojet
    external/vrap
    external/pos
    external/int

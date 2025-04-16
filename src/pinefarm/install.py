@@ -363,3 +363,9 @@ def update_environ():
     prepend("PATH", configs.configs["paths"]["bin"])
     prepend("LD_LIBRARY_PATH", lib)
     prepend("PKG_CONFIG_PATH", lib / "pkgconfig")
+
+
+def nnlojet():
+    """Installation of NNLOJET."""
+    print("Installation not supported yet")
+    return True
