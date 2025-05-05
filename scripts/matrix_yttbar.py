@@ -16,6 +16,7 @@ To run the check, use `pytest`:
 import numpy as np
 import pineappl
 import rich_click as click
+import subprocess
 
 
 class InvalidPineAPPL(Exception):
@@ -88,12 +89,12 @@ def modify_grids(
     """Rewrite the bin and observable contents of the Grid"""
     sign: int = 1 if positive_sign else (-1)
     modified_rap_bins = [
-        (float(left), float(right))
-        for left, right in zip(sign * grid.bin_left(0), sign * grid.bin_right(0))
+        (sign * float(left) if left != 0.0 else float(left), sign * float(right))
+        for left, right in zip(grid.bin_left(0), grid.bin_right(0))
     ]
 
     remapper = pineappl.bin.BinRemapper(
-        norm * grid.bin_normalizations(), modified_rap_bins
+         grid.bin_normalizations(), modified_rap_bins
     )
     grid.set_remapper(remapper)
     return
@@ -144,8 +145,8 @@ def merge_bins(
 ) -> None:
     """Merge two grids with different bins"""
     grid1.merge(grid2)
-    grid1.write_lz4(f"{outname}.pineappl.lz4")
-    return
+    return grid1
+
 
 
 @click.command()
@@ -174,7 +175,11 @@ def main(grid_path: str, output_name: str) -> None:
     # Revert the bin ordering of the negative rapidity Grid
     modified_grid = reverse_bins(grid=grid_neg)
 
-    merge_bins(grid1=modified_grid, grid2=grid_pos, outname=output_name)
+    merged_grid = merge_bins(grid1=modified_grid, grid2=grid_pos, outname=output_name)
+
+    merged_grid.write_lz4(f"{output_name}_temp.pineappl.lz4")
+    subprocess.run(["pineappl", "write", "--scale", "0.5", f"{output_name}_temp.pineappl.lz4", f"{output_name}.pineappl.lz4"])
+    subprocess.run(["rm", f"{output_name}_temp.pineappl.lz4"])
     return
 
 
