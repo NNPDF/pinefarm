@@ -13,10 +13,11 @@ To use, check `python ./matrix_yttbar.py --help`, or directly run:
 To run the check, use `pytest`:
     `pytest ./matrix_yttbar.py`
 """
+import subprocess
+
 import numpy as np
 import pineappl
 import rich_click as click
-import subprocess
 
 
 class InvalidPineAPPL(Exception):
@@ -93,9 +94,7 @@ def modify_grids(
         for left, right in zip(grid.bin_left(0), grid.bin_right(0))
     ]
 
-    remapper = pineappl.bin.BinRemapper(
-         grid.bin_normalizations(), modified_rap_bins
-    )
+    remapper = pineappl.bin.BinRemapper(grid.bin_normalizations(), modified_rap_bins)
     grid.set_remapper(remapper)
     return
 
@@ -148,7 +147,6 @@ def merge_bins(
     return grid1
 
 
-
 @click.command()
 @click.option(
     "--grid_path",
@@ -178,7 +176,16 @@ def main(grid_path: str, output_name: str) -> None:
     merged_grid = merge_bins(grid1=modified_grid, grid2=grid_pos, outname=output_name)
 
     merged_grid.write_lz4(f"{output_name}_temp.pineappl.lz4")
-    subprocess.run(["pineappl", "write", "--scale", "0.5", f"{output_name}_temp.pineappl.lz4", f"{output_name}.pineappl.lz4"])
+    subprocess.run(
+        [
+            "pineappl",
+            "write",
+            "--scale",
+            "0.5",
+            f"{output_name}_temp.pineappl.lz4",
+            f"{output_name}.pineappl.lz4",
+        ]
+    )
     subprocess.run(["rm", f"{output_name}_temp.pineappl.lz4"])
     return
 
