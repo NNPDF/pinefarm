@@ -101,7 +101,8 @@ We can now build APPLgrid by simply running the following commands:
 
    wget http://applgrid.hepforge.org/downloads/applgrid-1.6.27.tgz
    tar -zxvf applgrid-1.6.27.tgz
-   ./configure --path=${prefix}
+   cd applgrid-1.6.27
+   ./configure --prefix=${prefix}
    make -j
    [sudo] make install
    export LD_LIBRARY_PATH=${prefix}/lib:$LD_LIBRARY_PATH
