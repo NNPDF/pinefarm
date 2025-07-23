@@ -52,7 +52,7 @@ class Integrability(interface.External):
         self._q2 = np.power(self.theory["Q0"], 2)
         self._info = _IntegrabilityRuncard(**yaml_dict)
         self._evo2fl = evolution_to_flavour(self._info.flavour)
-        self.polarized = self.self._info.convolution_type == "PolPDF"
+        self.polarized = self._info.convolution_type == "PolPDF"
 
     def run(self):
         """Empty function."""
@@ -117,7 +117,7 @@ class Integrability(interface.External):
             scale_funcs=scale_funcs,
         )
         subgrid = pineappl.subgrid.ImportSubgridV1(
-            array=np.zeros((1, xgrid.size)),
+            array=np.full((1, xgrid.size), xgrid),
             node_values=[[self._q2], xgrid],
         )
         grid.set_subgrid(0, 0, 0, subgrid.into())

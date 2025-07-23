@@ -28,53 +28,99 @@ class Positivity(interface.External):
 
     def generate_pineappl(self):
         """Generate grid."""
-        self.xgrid = self.runcard["xgrid"]
-        self.lepton_pid = self.runcard["lepton_pid"]
+        self.xgrid = np.array(self.runcard["xgrid"])
         self.pid = self.runcard["pid"]
         self.q2 = self.runcard["q2"]
         self.hadron_pid = self.runcard["hadron_pid"]
         self.convolution_type = self.runcard.get("convolution_type", "UnpolPDF")
 
-        # init pineappl objects
-        lumi_entries = [pineappl.lumi.LumiEntry([(self.pid, self.lepton_pid, 1.0)])]
-        orders = [pineappl.grid.Order(0, 0, 0, 0)]
-        bins = len(self.xgrid)
-        bin_limits = list(map(float, range(0, bins + 1)))
-        # subgrid params - default is just sufficient
-        params = pineappl.subgrid.SubgridParams()
-        # inti grid
-        grid = pineappl.grid.Grid.create(lumi_entries, orders, bin_limits, params)
+        bins_length = len(self.xgrid)
+        bin_limits = [float(i) for i in range(0, bins_length + 1)]
+        polarized = self.convolution_type == "PolPDF"
+
+        # Instantiate the objecs required to construct a new Grid
+        channels = [pineappl.boc.Channel([([self.pid], 1.0)])]
+        orders = [pineappl.boc.Order(0, 0, 0, 0, 0)]
+        convolution_types = pineappl.convolutions.ConvType(
+            polarized=polarized, time_like=False
+        )
+        convolutions = [
+            pineappl.convolutions.Conv(
+                convolution_types=convolution_types, pid=self.hadron_pid
+            )
+        ]
+        kinematics = [pineappl.boc.Kinematics.Scale(0), pineappl.boc.Kinematics.X(0)]
+        scale_funcs = pineappl.boc.Scales(
+            ren=pineappl.boc.ScaleFuncForm.Scale(0),
+            fac=pineappl.boc.ScaleFuncForm.Scale(0),
+            frg=pineappl.boc.ScaleFuncForm.NoScale(0),
+        )
+        bin_limits = pineappl.boc.BinsWithFillLimits.from_fill_limits(
+            fill_limits=bin_limits
+        )
+        interpolations = [
+            pineappl.interpolation.Interp(
+                min=1e2,
+                max=1e3,
+                nodes=50,
+                order=3,
+                reweight_meth=pineappl.interpolation.ReweightingMethod.NoReweight,
+                map=pineappl.interpolation.MappingMethod.ApplGridH0,
+                interpolation_meth=pineappl.interpolation.InterpolationMethod.Lagrange,
+            ),  # Interpolation on the Scale
+            pineappl.interpolation.Interp(
+                min=1e-5,
+                max=1,
+                nodes=40,
+                order=3,
+                reweight_meth=pineappl.interpolation.ReweightingMethod.ApplGridX,
+                map=pineappl.interpolation.MappingMethod.ApplGridF2,
+                interpolation_meth=pineappl.interpolation.InterpolationMethod.Lagrange,
+            ),  # Interpolation on momentum fraction x
+        ]
+
+        grid = pineappl.grid.Grid(
+            pid_basis=pineappl.pids.PidBasis.Evol,
+            channels=channels,
+            orders=orders,
+            bins=bin_limits,
+            convolutions=convolutions,
+            interpolations=interpolations,
+            kinematics=kinematics,
+            scale_funcs=scale_funcs,
+        )
+
         limits = []
         # add each point as a bin
         for bin_, x in enumerate(self.xgrid):
             # keep DIS bins
-            limits.append((self.q2, self.q2))
-            limits.append((x, x))
-            # delta function
-            array = np.zeros(len(self.xgrid))
-            array[bin_] = x
-            # create and set
-            subgrid = pineappl.import_only_subgrid.ImportOnlySubgridV1(
-                array[np.newaxis, :, np.newaxis],
-                [self.q2],
-                self.xgrid,
-                [1.0],
+            limits.append([(self.q2, self.q2), (x, x)])
+            # Fill the subgrid with delta functions
+            array_subgrid = np.zeros((1, self.xgrid.size))
+            array_subgrid[0][bin_] = x
+            # create and set the subgrid
+            subgrid = pineappl.subgrid.ImportSubgridV1(
+                array=array_subgrid,
+                node_values=[[self.q2], self.xgrid],
             )
-            grid.set_subgrid(0, bin_, 0, subgrid)
+            grid.set_subgrid(0, bin_, 0, subgrid.into())
         # set the correct observables
-        normalizations = [1.0] * bins
-        remapper = pineappl.bin.BinRemapper(normalizations, limits)
-        grid.set_remapper(remapper)
+        normalizations = [1.0] * bins_length
+        bin_configs = pineappl.boc.BinsWithFillLimits.from_limits_and_normalizations(
+            limits=limits,
+            normalizations=normalizations,
+        )
+        grid.set_bwfl(bin_configs)
 
         # set the initial state PDF ids for the grid
-        grid.set_key_value("convolution_particle_1", str(self.hadron_pid))
-        grid.set_key_value("convolution_particle_2", str(self.lepton_pid))
-        grid.set_key_value("runcard", json.dumps(self.runcard))
-        grid.set_key_value("lumi_id_types", "pdg_mc_ids")
-        grid.set_key_value("convolution_type_1", self.convolution_type)
-        grid.set_key_value("convolution_type_2", str(None))
+        grid.set_metadata(
+            "runcard",
+            f"positivity constraint for quark {self.pid}",
+        )
+
+        # dump file
         grid.optimize()
-        grid.write(str(self.grid))
+        grid.write(self.grid)
 
     def results(self):
         """Apply PDF to grid."""
