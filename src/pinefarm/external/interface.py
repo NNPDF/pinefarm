@@ -156,7 +156,6 @@ class External(abc.ABC):
 
         entries = {}
         entries.update(versions)
-        entries["lumi_id_types"] = "pdg_mc_ids"
         entries["results_pdf"] = self.pdf
         tools.update_grid_metadata(
             self.grid, self.gridtmp, entries, {"results": results_log}

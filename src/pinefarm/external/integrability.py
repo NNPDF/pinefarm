@@ -30,7 +30,6 @@ def evolution_to_flavour(evol_fl):
 @dataclasses.dataclass
 class _IntegrabilityRuncard:
     hadron_pid: int
-    lepton_pid: int
     flavour: int
     xgrid: typing.List[float]
     convolution_type: typing.Optional[str] = "UnpolPDF"

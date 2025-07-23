@@ -1,7 +1,5 @@
 """Positivity interface."""
 
-import json
-
 import numpy as np
 import pandas as pd
 import pineappl
@@ -60,7 +58,7 @@ class Positivity(interface.External):
         )
         interpolations = [
             pineappl.interpolation.Interp(
-                min=1e2,
+                min=10,
                 max=1e3,
                 nodes=50,
                 order=3,
