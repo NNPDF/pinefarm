@@ -152,7 +152,7 @@ class External(abc.ABC):
         # other python dependencies versions
         versions["pinefarm"] = __version__
         versions["pinecard"] = self.load_pinecard()
-        versions["pineappl"] = pineappl.__version__
+        versions["pineappl"] = pineappl.version
 
         entries = {}
         entries.update(versions)
