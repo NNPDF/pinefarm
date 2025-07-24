@@ -225,11 +225,12 @@ def _fill_process(process):
     """Fill process options."""
     process_name = process["proc"]
     sqrts = process["sqrts"]
+    jet = process.get("jet", "none[0]")  # Can be None
     """Fill process block given the metadata for the process"""
     return f"""
 PROCESS  {process_name}
   collider = pp  sqrts = {sqrts}
-  jet = none[0]
+  jet = {jet}
   decay_type = 1
 END_PROCESS
 """
@@ -239,6 +240,7 @@ def _fill_run(runname, pdf, mode_line, techcut=1e-7, multi_channel=3):
     """Fil run options."""
     if multi_channel == 0:
         multi_channel = ".false."
+    # Note, scale coefficients need to be set to true to fill the grid
     return f"""
 RUN  {runname.upper()}
   PDF = {pdf}[0]
