@@ -27,7 +27,7 @@ def decide_external_tool(dsname: str):
     """
     # The decisions are usually based on the existence of a `.yaml` file with a specific name
     # or a prefix in the pinecard
-    if dsname.startswith("NNLOJET"):
+    if dsname.upper().startswith("NNLOJET"):
         from .nnlojet import NNLOJET
 
         return NNLOJET, "blue"

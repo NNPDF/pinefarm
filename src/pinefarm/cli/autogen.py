@@ -31,10 +31,12 @@ def runcards(dataset, target, select_obs=None, name=None):
 
     output = configs.configs["paths"]["runcards"] / f"{target}_{name}"
 
-    if target == "NNLOJET":
+    if target.upper() == "NNLOJET":
         output_runcards = generate_pinecard_from_nnpdf(
             dataset, output_path=output, observables=select_obs
         )
+    else:
+        raise ValueError(f"Target {target} not recognized")
 
     rich.print("Pinecards written to: ")
     rich.print("    " + "\n".join(str(i) for i in output_runcards))
