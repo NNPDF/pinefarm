@@ -1,5 +1,7 @@
 """Positivity interface."""
 
+import json
+
 import numpy as np
 import pandas as pd
 import pineappl
@@ -111,10 +113,7 @@ class Positivity(interface.External):
         grid.set_bwfl(bin_configs)
 
         # set the initial state PDF ids for the grid
-        grid.set_metadata(
-            "runcard",
-            f"positivity constraint for quark {self.pid}",
-        )
+        grid.set_metadata("runcard", json.dumps(self.runcard))
 
         # dump file
         grid.optimize()

@@ -1,6 +1,7 @@
 """Integrability interface."""
 
 import dataclasses
+import json
 import typing
 
 import numpy as np
@@ -59,7 +60,6 @@ class Integrability(interface.External):
 
     def generate_pineappl(self):
         """Generate the pineappl grid for the integrability observable."""
-
         xgrid = np.array(self._info.xgrid)
         bins_length = len(xgrid)
         bin_limits = [float(i) for i in range(0, bins_length + 1)]
@@ -134,7 +134,7 @@ class Integrability(interface.External):
         # set the initial state PDF ids for the grid
         grid.set_metadata(
             "runcard",
-            f"Integrability for pid : {self._info.hadron_pid}",
+            json.dumps(self._info.asdict()),
         )
 
         # dump file
