@@ -31,15 +31,18 @@ def convolute_grid(grid, pdf_name, integrated=False):
 
     pdf = lhapdf.mkPDF(pdf_name)
     loaded_grid = pineappl.grid.Grid.read(str(grid))
-    pineappl_results = loaded_grid.convolve_with_one(
-        2212, pdf.xfxQ2, pdf.alphasQ2, xi=tools.nine_points
+    pineappl_results = loaded_grid.convolve(
+        pdg_convs=loaded_grid.convolutions,
+        xfxs=[pdf.xfxQ2],
+        alphas=pdf.alphasQ2,
+        xi=tools.nine_points,
     )
 
     df = pd.DataFrame(more_itertools.chunked(pineappl_results, len(tools.nine_points)))
     df.rename
     df["sv_max"] = df.max(axis=1)
     df["sv_min"] = df.min(axis=1)
-    df.rename(columns={tools.nine_points.index((1.0, 1.0)): "integ"}, inplace=True)
+    df.rename(columns={tools.nine_points.index((1.0, 1.0, 1.0)): "integ"}, inplace=True)
     if integrated:
         normalizations = loaded_grid.bin_normalizations()
         df = df.multiply(normalizations, axis="index")
