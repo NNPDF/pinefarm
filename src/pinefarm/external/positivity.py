@@ -80,7 +80,7 @@ class Positivity(interface.External):
         ]
 
         grid = pineappl.grid.Grid(
-            pid_basis=pineappl.pids.PidBasis.Evol,
+            pid_basis=pineappl.pids.PidBasis.Pdg,
             channels=channels,
             orders=orders,
             bins=bin_limits,
