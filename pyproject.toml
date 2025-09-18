@@ -103,7 +103,7 @@ addopts = [
 ]
 
 [tool.pylint.master]
-extension-pkg-whitelist = ["numpy", "lhapdf", "pygit2"]
+extension-pkg-whitelist = ["numpy", "lhapdf", "pygit2", "pineappl"]
 ignore-paths = ["benchmarks/", "doc/", "tests/"]
 
 [tool.pylint.messages_control]
