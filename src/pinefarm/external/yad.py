@@ -78,7 +78,7 @@ class Yadism(interface.External):
         pdf_out = next(iter(pdf_out.tables.values()))
 
         sv_pdf_out = []
-        for xiR, xiF in tools.nine_points:
+        for xiR, xiF, _xiFR in tools.nine_points:
             sv_point = out.apply_pdf_alphas_alphaqed_xir_xif(
                 pdf,
                 lambda muR: lhapdf.mkAlphaS(self.pdf).alphasQ(muR),
