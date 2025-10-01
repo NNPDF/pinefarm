@@ -152,11 +152,10 @@ class External(abc.ABC):
         # other python dependencies versions
         versions["pinefarm"] = __version__
         versions["pinecard"] = self.load_pinecard()
-        versions["pineappl"] = pineappl.__version__
+        versions["pineappl"] = pineappl.version
 
         entries = {}
         entries.update(versions)
-        entries["lumi_id_types"] = "pdg_mc_ids"
         entries["results_pdf"] = self.pdf
         tools.update_grid_metadata(
             self.grid, self.gridtmp, entries, {"results": results_log}

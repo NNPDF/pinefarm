@@ -127,9 +127,14 @@ def patch(patch, base_dir="."):
 
 three_points = [0.5, 1.0, 2.0]
 "Three points prescription for scale variations."
-nine_points = list(itertools.product(three_points, three_points))
+twentyseven_points = list(itertools.product(three_points, three_points, three_points))
+"""27 points prescription for scale variations (as couples, referred to ``(fact,
+ren, frag)`` scales)."""
+nine_points = [
+    (a, b, 1.0) for (a, b) in list(itertools.product(three_points, three_points))
+]
 """Nine points prescription for scale variations (as couples, referred to ``(fact,
-ren)`` scales)."""
+ren, frag=1.0)`` scales)."""
 
 
 def git_pull(repo, remote_name="origin", branch="master"):
@@ -207,14 +212,10 @@ def set_grid_metadata(grid, entries=None, entries_from_file=None):
         entries_from_file = {}
 
     for k, v in entries.items():
-        if hasattr(grid, "set_key_value"):
-            grid.set_key_value(k, v)
-        else:  # pineappl 1.0 preparation
-            grid.set_metadata(k, v)
+        grid.set_metadata(k, v)
 
     for k, v in entries_from_file.items():
-        with open(v) as fd:
-            grid.set_key_value(k, fd.read())
+        grid.set_metadata(str(k), str(v))
 
 
 def common_substring(s1, s2, *sn):
