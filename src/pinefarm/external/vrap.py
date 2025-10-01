@@ -194,7 +194,7 @@ class Vrap(interface.External):
                     tmp_grid.set_bwfl(rebin)
                     tmp_grid.write(tmp_output)
                     # Now merge it into the main grid!
-                    main_grid.merge_from_file(tmp_output)
+                    main_grid.merge(tmp_grid)
             main_grid.write(self.grid)
 
     def results(self):
