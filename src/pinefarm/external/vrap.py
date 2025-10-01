@@ -181,13 +181,17 @@ class Vrap(interface.External):
             # Use the first subgrid as main grid
             main_grid = pineappl.grid.Grid.read(self._partial_grids[0].as_posix())
             n = len(main_grid.bin_left(0))
-            rebin = pineappl.bin.BinRemapper(np.ones(n), [(i, i) for i in range(n)])
-            main_grid.set_remapper(rebin)
+            limits = [[(i, i)] for i in range(n)]
+            rebin = pineappl.boc.BinsWithFillLimits.from_limits_and_normalizations(
+                limits=limits,
+                normalizations=np.ones(n),
+            )
+            main_grid.set_bwfl(rebin)
             with tempfile.TemporaryDirectory() as tmp:
                 for i, grid_path in enumerate(self._partial_grids[1:]):
                     tmp_output = f"{tmp}/bin_{i}.pineappl.lz4"
                     tmp_grid = pineappl.grid.Grid.read(grid_path.as_posix())
-                    tmp_grid.set_remapper(rebin)
+                    tmp_grid.set_bwfl(rebin)
                     tmp_grid.write(tmp_output)
                     # Now merge it into the main grid!
                     main_grid.merge_from_file(tmp_output)
