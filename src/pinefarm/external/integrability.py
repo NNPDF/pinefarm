@@ -31,7 +31,6 @@ def evolution_to_flavour(evol_fl):
 @dataclasses.dataclass
 class _IntegrabilityRuncard:
     hadron_pid: int
-    lepton_pid: int
     flavour: int
     xgrid: typing.List[float]
     convolution_type: typing.Optional[str] = "UnpolPDF"
@@ -53,7 +52,7 @@ class Integrability(interface.External):
         self._q2 = np.power(self.theory["Q0"], 2)
         self._info = _IntegrabilityRuncard(**yaml_dict)
         self._evo2fl = evolution_to_flavour(self._info.flavour)
-        self.convolution_type = self._info.convolution_type
+        self.polarized = self._info.convolution_type == "PolPDF"
 
     def run(self):
         """Empty function."""
@@ -61,26 +60,85 @@ class Integrability(interface.External):
 
     def generate_pineappl(self):
         """Generate the pineappl grid for the integrability observable."""
+        xgrid = np.array(self._info.xgrid)
+        bins_length = len(xgrid)
+        bin_limits = [float(i) for i in range(0, bins_length + 1)]
+
         ## Generate the grid
-        lumi_entries = [(fl, self._info.lepton_pid, w) for fl, w in self._evo2fl]
-        luminosities = [pineappl.lumi.LumiEntry(lumi_entries)]
+        channels = [([fl], w) for fl, w in self._evo2fl]
+        channels = [pineappl.boc.Channel(channels)]
         # Set default parameters
-        orders = [pineappl.grid.Order(0, 0, 0, 0)]
-        params = pineappl.subgrid.SubgridParams()
+        orders = [pineappl.boc.Order(0, 0, 0, 0, 0)]
+        convolution_types = pineappl.convolutions.ConvType(
+            polarized=self.polarized, time_like=False
+        )
+        convolutions = [
+            pineappl.convolutions.Conv(convolution_types=convolution_types, pid=2212)
+        ]
+        kinematics = [pineappl.boc.Kinematics.Scale(0), pineappl.boc.Kinematics.X(0)]
+        scale_funcs = pineappl.boc.Scales(
+            ren=pineappl.boc.ScaleFuncForm.Scale(0),
+            fac=pineappl.boc.ScaleFuncForm.Scale(0),
+            frg=pineappl.boc.ScaleFuncForm.NoScale(0),
+        )
+        bin_limits = pineappl.boc.BinsWithFillLimits.from_fill_limits(
+            fill_limits=bin_limits
+        )
+        interpolations = [
+            pineappl.interpolation.Interp(
+                min=1,
+                max=1e2,
+                nodes=50,
+                order=3,
+                reweight_meth=pineappl.interpolation.ReweightingMethod.NoReweight,
+                map=pineappl.interpolation.MappingMethod.ApplGridH0,
+                interpolation_meth=pineappl.interpolation.InterpolationMethod.Lagrange,
+            ),  # Interpolation on the Scale
+            pineappl.interpolation.Interp(
+                min=1e-9,
+                max=1,
+                nodes=40,
+                order=3,
+                reweight_meth=pineappl.interpolation.ReweightingMethod.ApplGridX,
+                map=pineappl.interpolation.MappingMethod.ApplGridF2,
+                interpolation_meth=pineappl.interpolation.InterpolationMethod.Lagrange,
+            ),  # Interpolation on momentum fraction x
+        ]
         # Initialize and parametrize grid
-        grid = pineappl.grid.Grid.create(luminosities, orders, [0.0, 1.0], params)
-        grid.set_key_value("convolution_particle_1", str(self._info.hadron_pid))
-        grid.set_key_value("convolution_particle_2", str(self._info.lepton_pid))
-        grid.set_key_value("runcard", json.dumps(self._info.asdict()))
-        grid.set_key_value("lumi_id_types", "pdg_mc_ids")
-        grid.set_key_value("convolution_type_1", self.convolution_type)
-        grid.set_key_value("convolution_type_2", str(None))
-        # Fill grid with x*f(x)
-        # use subgrid because fill doesn't work?
-        x = self._info.xgrid
-        w = np.array(x).reshape((1, -1, 1))
-        sg = pineappl.import_only_subgrid.ImportOnlySubgridV1(w, [self._q2], x, x)
-        grid.set_subgrid(0, 0, 0, sg)
+        grid = pineappl.grid.Grid(
+            pid_basis=pineappl.pids.PidBasis.Evol,
+            channels=channels,
+            orders=orders,
+            bins=bin_limits,
+            convolutions=convolutions,
+            interpolations=interpolations,
+            kinematics=kinematics,
+            scale_funcs=scale_funcs,
+        )
+        subgrid = pineappl.subgrid.ImportSubgridV1(
+            array=np.full((1, xgrid.size), xgrid),
+            node_values=[[self._q2], xgrid],
+        )
+        grid.set_subgrid(0, 0, 0, subgrid.into())
+
+        limits = [[(self._q2, self._q2), (xgrid, xgrid)]]
+
+        # set the correct observables
+        normalizations = [1.0] * bins_length
+        bin_configs = pineappl.boc.BinsWithFillLimits.from_limits_and_normalizations(
+            limits=limits,
+            normalizations=normalizations,
+        )
+        grid.set_bwfl(bin_configs)
+
+        # set the initial state PDF ids for the grid
+        grid.set_metadata(
+            "runcard",
+            json.dumps(self._info.asdict()),
+        )
+
+        # dump file
+        grid.optimize()
         grid.write(self.grid)
 
     def collect_versions(self):

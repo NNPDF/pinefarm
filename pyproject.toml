@@ -32,12 +32,12 @@ pkgconfig = "^1.5.5"
 pygit2 = "^1.12.0"
 requests = "^2.26.0"
 lhapdf-management = "^0.3"
-pineappl = "^0.8.2"
+pineappl = "^1.0"
 more-itertools = "^8.10.0"
 appdirs = "^1.4.4"
 tomli = "^2.0.1"
 nnpdf-data = { version = "0.0.3" }
-yadism = { extras = ["box"], version = "^0.13.5", optional=true, markers = "python_version < '3.13'" }
+yadism = { extras = ["box"], version = "^0.13.7", optional=true, markers = "python_version < '3.13'" }
 eko = { extras = ["box"], version = "^0.14.2", optional=true, markers = "python_version < '3.13'" }
 
 [tool.poetry.extras]
@@ -103,7 +103,7 @@ addopts = [
 ]
 
 [tool.pylint.master]
-extension-pkg-whitelist = ["numpy", "lhapdf", "pygit2"]
+extension-pkg-whitelist = ["numpy", "lhapdf", "pygit2", "pineappl"]
 ignore-paths = ["benchmarks/", "doc/", "tests/"]
 
 [tool.pylint.messages_control]

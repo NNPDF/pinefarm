@@ -19,11 +19,10 @@ import warnings
 
 import numpy as np
 import pandas as pd
+import pineappl
 import yaml
 from ekobox import genpdf
 from lhapdf_management import environment
-from pineappl.bin import BinRemapper
-from pineappl.grid import Grid
 
 from .. import configs, install
 from . import interface
@@ -147,7 +146,7 @@ class Vrap(interface.External):
             tmppine = self.dest / _PINEAPPL
 
             # Now change the name of the grid, optimize and apply any necessary cfactors
-            grid = Grid.read(tmppine.as_posix())
+            grid = pineappl.grid.Grid.read(tmppine.as_posix())
 
             # And give it a sensible name
             if len(self._kin_cards) == 1:
@@ -180,18 +179,22 @@ class Vrap(interface.External):
         """If the run contain more than one grid, merge them all."""
         if len(self._partial_grids) > 1:
             # Use the first subgrid as main grid
-            main_grid = Grid.read(self._partial_grids[0].as_posix())
+            main_grid = pineappl.grid.Grid.read(self._partial_grids[0].as_posix())
             n = len(main_grid.bin_left(0))
-            rebin = BinRemapper(np.ones(n), [(i, i) for i in range(n)])
-            main_grid.set_remapper(rebin)
+            limits = [[(i, i)] for i in range(n)]
+            rebin = pineappl.boc.BinsWithFillLimits.from_limits_and_normalizations(
+                limits=limits,
+                normalizations=np.ones(n),
+            )
+            main_grid.set_bwfl(rebin)
             with tempfile.TemporaryDirectory() as tmp:
                 for i, grid_path in enumerate(self._partial_grids[1:]):
                     tmp_output = f"{tmp}/bin_{i}.pineappl.lz4"
-                    tmp_grid = Grid.read(grid_path.as_posix())
-                    tmp_grid.set_remapper(rebin)
+                    tmp_grid = pineappl.grid.Grid.read(grid_path.as_posix())
+                    tmp_grid.set_bwfl(rebin)
                     tmp_grid.write(tmp_output)
                     # Now merge it into the main grid!
-                    main_grid.merge_from_file(tmp_output)
+                    main_grid.merge(tmp_grid)
             main_grid.write(self.grid)
 
     def results(self):
