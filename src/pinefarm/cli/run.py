@@ -58,7 +58,6 @@ def subcommand(pinecard, theory_path, pdf, dry, finalize=None):
         finalize: str
             path to the runfolder in which to run the post processing step
     """
-
     # Check whether pinecard is a path. If it is, override the configuration.
     if (pinpath := pathlib.Path(pinecard)).exists():
         # If this pinecard is not in the runcards folder, warn the user but let it continue
