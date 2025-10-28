@@ -24,6 +24,11 @@ class NNLOJET(interface.External):
         # Save the yaml dictionary from the NNLOJET pinecard
         self._yaml_dict = safe_load(yaml_card.open("r"))
 
+    @staticmethod
+    def install():
+        """NNLOJET should be installed manually."""
+        pass
+
     def preparation(self):
         """Run the preparation step for NNLOJET."""
         # Update the yaml card according to the theory
