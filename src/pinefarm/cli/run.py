@@ -58,7 +58,26 @@ def subcommand(pinecard, theory_path, pdf, dry, finalize=None):
         finalize: str
             path to the runfolder in which to run the post processing step
     """
-    pinecard = pathlib.Path(pinecard)
+
+    # Check whether pinecard is a path. If it is, override the configuration.
+    if (pinpath := pathlib.Path(pinecard)).exists():
+        # If this pinecard is not in the runcards folder, warn the user but let it continue
+        if pinpath.parent.absolute() != (
+            rcards := configs.configs["paths"]["runcards"]
+        ):
+            logger.warning(
+                f"The pinecard ({pinecard}) is not in the runcards ({rcards}) folder, overriding config."
+            )
+            configs.configs["paths"]["runcards"] = pinpath.parent
+        pinecard = pinpath
+    # Otherwise, use the configuration to fill the path
+    else:
+        pinecard = configs.configs["paths"]["runcards"] / pinecard
+
+    # Check for existence
+    if not pinecard.exists():
+        raise FileNotFoundError(f"The pinecard {pinecard} cannot be found")
+
     if finalize is not None:
         finalize = pathlib.Path(finalize)
 
