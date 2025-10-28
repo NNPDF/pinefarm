@@ -13,9 +13,7 @@ from ... import configs, install, log, tools
 from .. import interface
 from . import paths
 
-URL = "https://launchpad.net/mg5amcnlo/{major}.0/{major}.{minor}.x/+download/MG5_aMC_v{version}.tar.gz"
-"URL template for MG5aMC\\@NLO release"
-VERSION = "3.6.5"
+URL = "https://github.com/mg5amcnlo/mg5amcnlo/archive/refs/tags/v3.6.5.tar.gz"
 "Version in use"
 CONVERT_MODEL = """
 set auto_convert_model True
@@ -27,8 +25,7 @@ quit
 
 def url():
     """Compute actual download URL."""
-    major, minor, _ = VERSION.split(".")
-    return URL.format(version=VERSION, major=major, minor=minor)
+    return URL
 
 
 class Mg5(interface.External):
