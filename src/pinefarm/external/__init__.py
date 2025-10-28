@@ -27,7 +27,6 @@ def decide_external_tool(dsname: str):
     """
     # The decisions are usually based on the existence of a `.yaml` file with a specific name
     # or a prefix in the pinecard
-
     if dsname.startswith("NNLOJET"):
         from .nnlojet import NNLOJET
 
@@ -54,7 +53,10 @@ def decide_external_tool(dsname: str):
 
         return integrability.Integrability, "brown"
 
-    # Defaults to Madgraph
-    from . import mg5  # pylint: disable=import-outside-toplevel
+    # Try with Madgraph...
+    if (configs["paths"]["runcards"] / dsname / "launch.txt").exists():
+        from . import mg5  # pylint: disable=import-outside-toplevel
 
-    return mg5.Mg5, "blue"
+        return mg5.Mg5, "blue"
+
+    raise ValueError(f"pinefarm could not discover the tool to use for {dsname}")
