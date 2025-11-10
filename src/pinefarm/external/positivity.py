@@ -26,11 +26,22 @@ class Positivity(interface.External):
         ) as o:
             self.runcard = yaml.safe_load(o)
 
+    def read_kinematics(self):
+        """Read kinematics from runcard."""
+        if "kinematics" in self.runcard:
+            kinematics = self.runcard["kinematics"]
+            xgrid = np.array([point["x"] for point in kinematics])
+            q2grid = np.array([point["q2"] for point in kinematics])
+        else:
+            xgrid = np.array(self.runcard["xgrid"])
+            q2 = self.runcard["q2"]
+            q2grid = np.full_like(xgrid, q2)
+        return xgrid, q2grid
+
     def generate_pineappl(self):
         """Generate grid."""
-        self.xgrid = np.array(self.runcard["xgrid"])
+        self.xgrid, self.q2grid = self.read_kinematics()
         self.pid = self.runcard["pid"]
-        self.q2 = self.runcard["q2"]
         self.hadron_pid = self.runcard["hadron_pid"]
         self.convolution_type = self.runcard.get("convolution_type", "UnpolPDF")
 
@@ -92,16 +103,16 @@ class Positivity(interface.External):
 
         limits = []
         # add each point as a bin
-        for bin_, x in enumerate(self.xgrid):
+        for bin_, (x, q2) in enumerate(zip(self.xgrid, self.q2grid)):
             # keep DIS bins
-            limits.append([(self.q2, self.q2), (x, x)])
+            limits.append([(q2, q2), (x, x)])
             # Fill the subgrid with delta functions
             array_subgrid = np.zeros((1, self.xgrid.size))
             array_subgrid[0][bin_] = x
             # create and set the subgrid
             subgrid = pineappl.subgrid.ImportSubgridV1(
                 array=array_subgrid,
-                node_values=[[self.q2], self.xgrid],
+                node_values=[self.q2grid, self.xgrid],
             )
             grid.set_subgrid(0, bin_, 0, subgrid.into())
         # set the correct observables
@@ -125,27 +136,29 @@ class Positivity(interface.External):
 
         pdf = lhapdf.mkPDF(self.pdf)
         d = {
-            "result": [pdf.xfxQ2(self.pid, x, self.q2) for x in self.xgrid],
+            "result": [
+                pdf.xfxQ2(self.pid, x, q2) for (x, q2) in zip(self.xgrid, self.q2grid)
+            ],
             "error": [1e-15] * len(self.xgrid),
             "sv_min": [
                 np.amin(
                     [
-                        pdf.xfxQ2(self.pid, x, 0.25 * self.q2),
-                        pdf.xfxQ2(self.pid, x, self.q2),
-                        pdf.xfxQ2(self.pid, x, 4.0 * self.q2),
+                        pdf.xfxQ2(self.pid, x, 0.25 * q2),
+                        pdf.xfxQ2(self.pid, x, q2),
+                        pdf.xfxQ2(self.pid, x, 4.0 * q2),
                     ]
                 )
-                for x in self.xgrid
+                for (x, q2) in zip(self.xgrid, self.q2grid)
             ],
             "sv_max": [
                 np.amax(
                     [
-                        pdf.xfxQ2(self.pid, x, 0.25 * self.q2),
-                        pdf.xfxQ2(self.pid, x, self.q2),
-                        pdf.xfxQ2(self.pid, x, 4.0 * self.q2),
+                        pdf.xfxQ2(self.pid, x, 0.25 * q2),
+                        pdf.xfxQ2(self.pid, x, q2),
+                        pdf.xfxQ2(self.pid, x, 4.0 * q2),
                     ]
                 )
-                for x in self.xgrid
+                for (x, q2) in zip(self.xgrid, self.q2grid)
             ],
         }
         results = pd.DataFrame(data=d)
