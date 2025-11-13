@@ -112,7 +112,7 @@ class Positivity(interface.External):
             # create and set the subgrid
             subgrid = pineappl.subgrid.ImportSubgridV1(
                 array=array_subgrid,
-                node_values=[self.q2grid, self.xgrid],
+                node_values=[[q2], self.xgrid],
             )
             grid.set_subgrid(0, bin_, 0, subgrid.into())
         # set the correct observables
