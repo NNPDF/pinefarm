@@ -222,15 +222,19 @@ def parse_input_yaml(yaml_path):
 
 
 def _fill_process(process):
-    """Fill process options."""
+    """Fill process block given the metadata for the process"""
     process_name = process["proc"]
     sqrts = process["sqrts"]
     jet = process.get("jet", "none[0]")  # Can be None
-    """Fill process block given the metadata for the process"""
+    fill_photon = ""
+    if process_name.startswith("G"):
+        fill_photon = f"""
+    photon_isolation = {process['photon_isolation']}
+    photon_fragmentation = {process['photon_fragmentation']}"""
     return f"""
 PROCESS  {process_name}
   collider = pp  sqrts = {sqrts}
-  jet = {jet}
+  jet = {jet}{fill_photon}
   decay_type = 1
 END_PROCESS
 """
@@ -270,6 +274,7 @@ def _fill_parameters(theory_parameters):
     return f"""
 PARAMETERS
 {ptext}
+hard_photon_alpha0 = .true. ! only useful for GJ runs
 END_PARAMETERS
 """
 
