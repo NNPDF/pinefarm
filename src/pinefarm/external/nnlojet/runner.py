@@ -81,13 +81,11 @@ class NNLOJET(interface.External):
         else:
             runcard_path = self.dest / f"{pinedata.runname}.run"
             rfull = generate_runcard(pinedata, "LO", runcard_path=runcard_path)
-            rich.print(
-                f"""
+            rich.print(f"""
     Runcard written to {runcard_path}.
     Prepare your NNLOJET run with
     ~$ nnlojet-run init {runcard_path}
-"""
-            )
+""")
 
         return True
 

@@ -90,14 +90,12 @@ def print_table(pineappl_results, external_results, dest):
 
     comparison.replace(float("inf"), 0.0, inplace=True)
 
-    header = inspect.cleandoc(
-        """
+    header = inspect.cleandoc("""
         -------------------------------------------------------------------------
         bin   PineAPPL         MC        sigma      central         min      max
                                          1/100   sigma   1/1000   1/1000   1/1000
         -------------------------------------------------------------------------
-        """
-    )
+        """)
     exp_float = lambda f: f" {f:.6e}"
     fixed_decimals = lambda w, n: lambda f: f"{{:{w}.{n}f}}".format(f)
     formatters = {
