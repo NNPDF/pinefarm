@@ -126,11 +126,9 @@ def subcommand(pinecard, theory_path, pdf, dry, finalize=None):
     if finalize is None:
         runner_stop = runner.preparation()
         if dry or runner_stop:
-            rich.print(
-                f"""Running in dry mode, exiting now.
+            rich.print(f"""Running in dry mode, exiting now.
     The preparation step can be found in:
-        {runner.dest}"""
-            )
+        {runner.dest}""")
             sys.exit(0)
 
         ###### <this part will eventually go to -prepare->
