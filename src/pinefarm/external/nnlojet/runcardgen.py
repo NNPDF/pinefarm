@@ -9,6 +9,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from functools import cached_property
 from pathlib import Path
+from typing import Union
 
 import numpy as np
 from yaml import safe_load
@@ -55,7 +56,7 @@ class Histogram:
     bins: list
     extra_selectors: dict = None
     pineappl: bool = True
-    fac: int = None
+    fac: Union[float, str] = None
     compositions: list[dict] = field(default_factory=list)
 
     def __post_init__(self):
@@ -222,7 +223,7 @@ def parse_input_yaml(yaml_path):
 
 
 def _fill_process(process):
-    """Fill process block given the metadata for the process"""
+    """Fill process block given the metadata for the process."""
     process_name = process["proc"]
     sqrts = process["sqrts"]
     jet = process.get("jet", "none[0]")  # Can be None
