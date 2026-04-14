@@ -58,5 +58,10 @@ def decide_external_tool(dsname: str):
         from . import mg5  # pylint: disable=import-outside-toplevel
 
         return mg5.Mg5, "blue"
+    
+    if (configs["paths"]["runcards"] / dsname / "ploughshare_link.txt").exists():
+        from . import plough
+
+        return plough.Plough, "purple"
 
     raise ValueError(f"pinefarm could not discover the tool to use for {dsname}")

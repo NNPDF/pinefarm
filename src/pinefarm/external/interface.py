@@ -199,7 +199,7 @@ class External(abc.ABC):
         entries = {}
         if metadata.exists():
             for line in metadata.read_text().splitlines():
-                k, v = line.split("=")
+                k, v = line.split("=", 1)
                 entries[k] = v
 
         for ext in ["*.pineappl.lz4", "*.pineappl"]:
