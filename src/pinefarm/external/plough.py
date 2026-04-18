@@ -1,27 +1,34 @@
+'''
+Download grids + convert them to pineappl format
+'''
+
 from . import interface
 from .. import table
 import requests
+import urllib.request
 import shutil
 import tarfile
 import subprocess
 import os
 import pineappl
 
-'''
-Download grids + convert them to pineappl format
-'''
+PLOUGHSHARE_LINK_FILENAME = "ploughshare_link.txt"
+GRIDS_PROCESSOR = "process_grids.sh"
+GRIDS_TMP = "grids"
+
 
 class Plough(interface.External):
 
     def __init__(self, pinecard, theorycard, *args, **kwargs):
         super().__init__(pinecard, theorycard, *args, **kwargs)
-        self.ps_link = self.source/"ploughshare_link.txt"
-        self.link = self.ps_link.read_text()
+        self.ps_link = self.source/PLOUGHSHARE_LINK_FILENAME
+        with open(self.ps_link) as ps_link:
+            self.link = ps_link.readline()
         
         self.filename = self.link.rsplit('/')[-1]
-        self.foldername = self.filename.rsplit('.', 1)[0]
+        self.dir_name = self.filename.rsplit('.', 1)[0]
         self.tarball = self.dest/self.filename
-        self.processor = self.source/"process_grids.sh"
+        self.processor = self.source/GRIDS_PROCESSOR
         self.run()
         self.generate_pineappl()
         self.timestamp = 0
@@ -35,7 +42,7 @@ class Plough(interface.External):
         print(f"Grids successfully downloaded to {self.tarball}")
         print("Extracting files...")
         self.extract_tarball()
-        print(f"Grids successfully extracted to {self.foldername}")
+        print(f"Grids successfully extracted to {self.dir_name}")
 
     def results(self):
         pass
@@ -46,9 +53,9 @@ class Plough(interface.External):
     def generate_pineappl(self):
         print("Grid conversion started...")
         # the grids are converted and processed here
-        os.environ["PS_DIR"] = str(self.gridsfolder)
-        # note that filename is also foldername
-        os.environ["FILENAME"] = str(self.foldername)
+        os.environ["PS_DIR"] = str(self.grids_dir)
+        # note that filename is also dir_name
+        os.environ["FILENAME"] = str(self.dir_name)
         if os.access(self.processor, os.X_OK):
             shutil.copy2(self.processor, self.dest)
             subprocess.run("./process_grids.sh", cwd=self.dest, check=True)
@@ -63,12 +70,7 @@ class Plough(interface.External):
         '''
         Download the file and move it to the output folder
         '''
-        with requests.get(self.link, stream=True) as r:
-            r.raise_for_status()
-            with (self.dest/self.filename).open("wb") as f:
-                for chunk in r.iter_content(chunk_size=1024*1024):
-                    if chunk:
-                        f.write(chunk)
+        urllib.request.urlretrieve(self.link, self.dest/self.filename)
 
     def extract_tarball(self):
         '''
@@ -76,4 +78,4 @@ class Plough(interface.External):
         '''
         with tarfile.open(self.tarball, "r:*") as tf:
             tf.extractall(self.dest)
-        self.gridsfolder = self.dest/self.foldername/"grids"
+        self.grids_dir = self.dest/self.dir_name/GRIDS_TMP
