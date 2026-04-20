@@ -23,8 +23,7 @@ class Plough(interface.External):
     def __init__(self, pinecard, theorycard, *args, **kwargs):
         super().__init__(pinecard, theorycard, *args, **kwargs)
         self.ps_link = self.source / PLOUGHSHARE_LINK_FILENAME
-        with open(self.ps_link) as ps_link:
-            self.link = ps_link.readline()
+        self.link = self.ps_link.read_text()
 
         self.filename = self.link.rsplit("/")[-1]
         self.dir_name = self.filename.rsplit(".", 1)[0]
