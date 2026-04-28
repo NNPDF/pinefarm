@@ -190,7 +190,7 @@ def run_dataset(runner):
 
             # collect results in the output pineappl grid
             runner.generate_pineappl()
-            if not hasattr(runner, "ps_link"):
+            if runner._print_comparison:
                 table.print_table(
                     table.convolute_grid(
                         runner.grid, runner.pdf, integrated=isinstance(runner, mg5.Mg5)

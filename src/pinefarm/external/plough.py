@@ -26,6 +26,8 @@ class Plough(interface.External):
         self.filename = self.link.rsplit("/")[-1]
         self.dir_name = self.filename.rsplit(".", 1)[0]
         self.tarball = self.dest / self.filename
+        self._print_comparison = False
+        self._run_without_grids = True
 
     def run(self):
         """Download and extract the .tgz file."""
@@ -40,11 +42,9 @@ class Plough(interface.External):
                 )
         except Exception as e:
             raise FileNotFoundError(f"{self.tarball} could not be downloaded!") from e
-        print(f"Grids successfully downloaded to {self.tarball}")
         print("Extracting files...")
         self.extract_tarball()
         print(f"Grids successfully extracted to {self.dest}")
-        self.cleanup()
 
     def results(self):
         """Results are collected and compared at the pineappl (script) level."""
@@ -70,11 +70,6 @@ class Plough(interface.External):
         grids_list = sorted(os.listdir(self.grids_dir))
         for i, grid in enumerate(grids_list):
             extension = grid.split(".", 2)[2]
-            print(extension)
             os.rename(self.grids_dir / grid, self.dest / f"grid_{i}.{extension}")
-
-    def cleanup(self):
-        """Delete unnecessary files and create tmp.pineappl.lz4 to allow postprocessing."""
         shutil.rmtree(self.dest / self.dir_name)
         self.tarball.unlink()
-        open(self.dest / "tmp.pineappl.lz4", "x")
