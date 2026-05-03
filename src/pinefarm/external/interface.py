@@ -42,14 +42,14 @@ class External(abc.ABC):
         runcards_path=None,
         output_folder=None,
         print_comparison=True,
-        run_without_grids=False,
+        postrun_without_grids=False,
     ):
         self.name = name
         self.theory = theory
         self.pdf = pdf
         self.timestamp = timestamp
         self._print_comparison = print_comparison
-        self._run_without_grids = run_without_grids
+        self._postrun_without_grids = postrun_without_grids
         if runcards_path is None:
             self._runcards_path = configs.configs["paths"]["runcards"]
         else:
@@ -189,7 +189,7 @@ class External(abc.ABC):
         else:
             grids = list(self.dest.glob("*.pineappl*"))
 
-        if not grids and not self._run_without_grids:
+        if not grids and not self._postrun_without_grids:
             raise ValueError("Tried to run postprocessing in a folder with no grids?")
 
         os.environ["PINECARD"] = self.source.as_posix()
