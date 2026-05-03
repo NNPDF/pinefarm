@@ -12,7 +12,7 @@ from .. import table
 from . import interface
 
 PLOUGHSHARE_LINK_FILENAME = "ploughshare_link.txt"
-GRIDS_TMP = "grids"
+GRIDS_FROM_PS = "grids"
 
 
 class Plough(interface.External):
@@ -71,7 +71,7 @@ class Plough(interface.External):
         """Extract the contents."""
         with tarfile.open(self.tarball, "r:*") as tf:
             tf.extractall(self.dest)
-        self.grids_dir = self.dest / self.dir_name / GRIDS_TMP
+        self.grids_dir = self.dest / self.dir_name / GRIDS_FROM_PS
         grids_list = sorted(os.listdir(self.grids_dir))
         for grid in grids_list:
             grid_num, extension = grid.split(".", 2)[1:]
