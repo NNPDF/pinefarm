@@ -212,8 +212,8 @@ class External(abc.ABC):
                 k, v = line.split("=", 1)
                 entries[k] = v
 
-        if hasattr(self, "ploughshare_id"):
-            entries["ploughshare_id"] = self.ploughshare_id
+        if hasattr(self, "ploughshare_metadata_link"):
+            entries["ploughshare_link"] = self.ploughshare_metadata_link
 
         for ext in ["*.pineappl.lz4", "*.pineappl"]:
             for grid in self.dest.glob(ext):

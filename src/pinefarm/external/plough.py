@@ -13,6 +13,10 @@ from . import interface
 
 PLOUGHSHARE_LINK_FILENAME = "ploughshare_link.txt"
 GRIDS_FROM_PS = "grids"
+PLOUGHSHARE_METADATA_LINK = (
+    "https://ploughshare.web.cern.ch/ploughshare/record.php?group="
+)
+DATASET_FOR_METADATA_LINK = "&dataset="
 
 
 class Plough(interface.External):
@@ -33,6 +37,13 @@ class Plough(interface.External):
         self.filename = self.link.rsplit("/")[-1]
         self.ploughshare_id = self.filename.rsplit(".", 1)[0]
         self.tarball = self.dest / self.filename
+        self.group = self.ploughshare_id.split("-", 1)[0]
+        self.ploughshare_metadata_link = (
+            PLOUGHSHARE_METADATA_LINK
+            + self.group
+            + DATASET_FOR_METADATA_LINK
+            + self.ploughshare_id
+        )
 
     def run(self):
         """Download and extract the .tgz file."""
