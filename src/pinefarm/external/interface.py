@@ -212,6 +212,9 @@ class External(abc.ABC):
                 k, v = line.split("=", 1)
                 entries[k] = v
 
+        if hasattr(self, "ploughshare_id"):
+            entries["ploughshare_id"] = self.ploughshare_id
+
         for ext in ["*.pineappl.lz4", "*.pineappl"]:
             for grid in self.dest.glob(ext):
                 tools.update_grid_metadata(grid, self.gridtmp, entries)

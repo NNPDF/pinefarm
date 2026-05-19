@@ -31,7 +31,7 @@ class Plough(interface.External):
         self.link = self.ps_link.read_text()
 
         self.filename = self.link.rsplit("/")[-1]
-        self.dir_name = self.filename.rsplit(".", 1)[0]
+        self.ploughshare_id = self.filename.rsplit(".", 1)[0]
         self.tarball = self.dest / self.filename
 
     def run(self):
@@ -71,11 +71,11 @@ class Plough(interface.External):
         """Extract the contents."""
         with tarfile.open(self.tarball, "r:*") as tf:
             tf.extractall(self.dest)
-        self.grids_dir = self.dest / self.dir_name / GRIDS_FROM_PS
+        self.grids_dir = self.dest / self.ploughshare_id / GRIDS_FROM_PS
         grids_list = sorted(os.listdir(self.grids_dir))
         for grid in grids_list:
             grid_num, extension = grid.split(".", 2)[1:]
             grid_num = grid_num[-3:]
             os.rename(self.grids_dir / grid, self.dest / f"grid_{grid_num}.{extension}")
-        shutil.rmtree(self.dest / self.dir_name)
+        shutil.rmtree(self.dest / self.ploughshare_id)
         self.tarball.unlink()
