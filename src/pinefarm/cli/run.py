@@ -190,18 +190,18 @@ def run_dataset(runner):
 
             # collect results in the output pineappl grid
             runner.generate_pineappl()
+            if runner._print_comparison:
+                table.print_table(
+                    table.convolute_grid(
+                        runner.grid, runner.pdf, integrated=isinstance(runner, mg5.Mg5)
+                    ),
+                    runner.results(),
+                    runner.dest,
+                )
 
-            table.print_table(
-                table.convolute_grid(
-                    runner.grid, runner.pdf, integrated=isinstance(runner, mg5.Mg5)
-                ),
-                runner.results(),
-                runner.dest,
-            )
-
-            # TODO: annotate_version should be a post-processing step
-            # however at the moment only works in 1-grid cases
-            runner.annotate_versions()
+                # TODO: annotate_version should be a post-processing step
+                # however at the moment only works in 1-grid cases
+                runner.annotate_versions()
 
         runner.postprocess()
 

@@ -34,12 +34,22 @@ class External(abc.ABC):
     kind = None
 
     def __init__(
-        self, name, theory, pdf, timestamp=None, runcards_path=None, output_folder=None
+        self,
+        name,
+        theory,
+        pdf,
+        timestamp=None,
+        runcards_path=None,
+        output_folder=None,
+        print_comparison=True,
+        postrun_without_grids=False,
     ):
         self.name = name
         self.theory = theory
         self.pdf = pdf
         self.timestamp = timestamp
+        self._print_comparison = print_comparison
+        self._postrun_without_grids = postrun_without_grids
         if runcards_path is None:
             self._runcards_path = configs.configs["paths"]["runcards"]
         else:
@@ -179,7 +189,7 @@ class External(abc.ABC):
         else:
             grids = list(self.dest.glob("*.pineappl*"))
 
-        if not grids:
+        if not grids and not self._postrun_without_grids:
             raise ValueError("Tried to run postprocessing in a folder with no grids?")
 
         os.environ["PINECARD"] = self.source.as_posix()
@@ -199,8 +209,11 @@ class External(abc.ABC):
         entries = {}
         if metadata.exists():
             for line in metadata.read_text().splitlines():
-                k, v = line.split("=")
+                k, v = line.split("=", 1)
                 entries[k] = v
+
+        if hasattr(self, "ploughshare_metadata_link"):
+            entries["ploughshare_link"] = self.ploughshare_metadata_link
 
         for ext in ["*.pineappl.lz4", "*.pineappl"]:
             for grid in self.dest.glob(ext):
