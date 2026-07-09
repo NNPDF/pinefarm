@@ -8,6 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 - Added support for download from Ploughshare ([#127](https://github.com/NNPDF/pinefarm/pull/127))
+- Add support for Python 3.14 ([#131](https://github.com/NNPDF/pinefarm/pull/131))
+
+### Changed
+- Update `eko` to 0.15.4 ([#131](https://github.com/NNPDF/pinefarm/pull/131))
+- Update `yadism` to 0.13.11 (which brings a new `ADANI`) ([#131](https://github.com/NNPDF/pinefarm/pull/131))
+
+### Removed
+- Drop support for Python 3.10 ([#131](https://github.com/NNPDF/pinefarm/pull/131))
 
 ## [0.4.1](https://github.com/NNPDF/pinefarm/compare/v0.4.0...v0.4.1) - 2026-02-24
 
