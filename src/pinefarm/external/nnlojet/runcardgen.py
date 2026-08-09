@@ -54,6 +54,7 @@ class Histogram:
     name: str
     observable: str
     bins: list
+    grid_name: str = None
     extra_selectors: dict = None
     pineappl: bool = True
     fac: Union[float, str] = None
@@ -89,7 +90,8 @@ class Histogram:
         hstr = f"{INDT}{self.observable} > {self.name} {self.bins}"
 
         if self.pineappl:
-            hstr += f" grid={self.name}.pine"
+            grid_name = self.grid_name or self.name
+            hstr += f" grid={grid_name}.pine"
         if self.fac is not None:
             hstr += f" fac={self.fac}"
 
@@ -116,9 +118,10 @@ class Selector:
     observable: str
     min: float = None
     max: float = None
+    action: str = "select"
 
     def to_str(self):  # noqa: D102
-        ret = f"{INDT}select {self.observable} "
+        ret = f"{INDT}{self.action} {self.observable} "
         if self.min is not None:
             ret += f" min = {self.min}"
         if self.max is not None:
