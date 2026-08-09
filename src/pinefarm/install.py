@@ -300,7 +300,6 @@ def lhapdf():
 
     This is currently needed by every tool due to postprocessing requirements.
     """
-
     def installed():
         """Define availability condition."""
         try:

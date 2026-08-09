@@ -28,7 +28,7 @@ yaml = YAML(pure=True)
 yaml.default_flow_style = False
 yaml.indent(sequence=4, offset=2, mapping=4)
 
-HISTOGRAM_VARIABLES = {"y", "etay", "eta", "pT", "pT2", "M2"}
+HISTOGRAM_VARIABLES = {"y", "etay", "eta", "pT", "pT2", "M2", "ET"}
 
 
 def _legacy_nnpdf_translation(df, proc_type):
@@ -88,23 +88,28 @@ def _1d_histogram(kin_df, hist_var):
 def _nnlojet_observable(observable, process):
     """Try to automatically understand the NNLOJET observables given the NNPDF process and obs."""
     observable = observable.lower()
+    process = process.upper()
     if observable in ("eta", "y", "etay"):
-        if process.upper().startswith("Z"):
+        if process.startswith("Z"):
             return "yz"
-        if process.upper().startswith("WP") and not process.upper().endswith("J"):
+        if process.startswith("WP") and not process.endswith("J"):
             return "ylp"
-        if process.upper().startswith("WM") and not process.upper().endswith("J"):
+        if process.startswith("WM") and not process.endswith("J"):
             return "ylm"
+        if process.startswith("GJ"):
+            return "y_gam"
     if observable == "pt":
-        if process.upper().startswith("Z"):
+        if process.startswith("Z"):
             return "ptz"
-        if process.upper().startswith("W"):
+        if process.startswith("W"):
             return "ptw"
-    if observable == "m" and process.upper().startswith("Z"):
+    if observable == "m" and process.startswith("Z"):
         return "mll"
     if observable == "m2":
         print("\033[91m [WARNING] \033[0m Changed M2 to M in the selectors")
         return "mll"
+    if observable == "et" and process.startswith("GJ"):
+        return "pt_gam"
 
     raise ValueError(f"Observable {observable} not recognized for process {process}")
 
@@ -193,9 +198,17 @@ def _generate_nnlojet_pinecard(runname, process, energy, experiment, histograms)
     """Generate a pinecard for NNLOJET runs from an NNPDF dataset."""
     selectors = select_selectors(experiment, process)
     histograms = deepcopy(histograms)
+    photon = {}
 
+    # Digest the process variable
     if process.startswith("Z0"):
         process = process.replace("Z0", "Z")
+    if process.startswith("G"):
+        # Defaults for: 2302.00510
+        photon = {
+            "photon_isolation": "etsum[R=0.4, ETmax_const=4.8, ETmax_epsilon=0.0042, ET_threshold=0]",
+            "photon_fragmentation": "BFG2",
+        }
 
     # Digest the histogram variable
     for histo in histograms:
@@ -204,7 +217,7 @@ def _generate_nnlojet_pinecard(runname, process, energy, experiment, histograms)
 
     ret = {
         "runname": runname,
-        "process": {"proc": process, "sqrts": energy},
+        "process": {"proc": process, "sqrts": energy, **photon},
         "pdf": "NNPDF40_nnlo_as_01180",
         "techcut": 1e-7,
         "histograms": histograms,
@@ -227,11 +240,21 @@ def _generate_nnlojet_pinecard(runname, process, energy, experiment, histograms)
         },
         "selectors": selectors,
     }
+
+    # Add the scale
+    if process.startswith("Z"):
+        ret["scales"] = {"mur": "etz", "muf": "etz"}
+    elif process.startswith("W"):
+        ret["scales"] = {"mur": "etw", "muf": "etw"}
+    elif process.startswith("G"):
+        # Defaults for: 2302.00510 R=0.4
+        ret["scales"] = {"mur": "pt_gam", "muf": "[pt_gam, 0.871*sqrt_pt_gam]"}
+
     return ret
 
 
 def generate_pinecard_from_nnpdf(
-    nnpdf_dataset, scale="etz", output_path=".", observables=None
+    nnpdf_dataset, scale=None, output_path=".", observables=None
 ):
     """Generate a NNLOJET pinecard from an NNPDF dataset.
 
@@ -277,6 +300,8 @@ def generate_pinecard_from_nnpdf(
         if "M2" in hist_vars:
             if len(kin_df["M2"]["mid"].unique()) == 1:
                 hist_vars.remove("M2")
+    elif process.startswith("PH"):
+        process = process.replace("PH", "GJ")
 
     # Create the histogram depending on whether this is a 1D or 2D distribution (or total)
     histograms = None
@@ -286,10 +311,10 @@ def generate_pinecard_from_nnpdf(
     elif len(hist_vars) == 2:
 
         # Let's see whether we know how to do this 2D distribution
-        if "M2" in hist_vars:
-            svar = "M2"
-        elif "y" in hist_vars:
-            svar = "y"
+        for var_i_know in ["M2", "y", "eta"]:
+            if var_i_know in hist_vars:
+                svar = var_i_know
+                break
         else:
             raise NotImplementedError(f"Don't know how to do this 2D: {hist_vars}")
         hist_vars.remove(svar)
@@ -349,7 +374,7 @@ def generate_pinecard_from_nnpdf(
     processes = [process]
     if process.startswith("WPWM"):
         processes = [process.replace("WP", ""), process.replace("WM", "")]
-    if process == "DY":
+    elif process == "DY":
         processes = ["Z0", "WP", "WM"]
 
     parent_folder = output_path.parent
@@ -360,7 +385,9 @@ def generate_pinecard_from_nnpdf(
         runname = nnpdf_dataset.replace(process, proc)
 
         ret = _generate_nnlojet_pinecard(runname, proc, energy, experiment, histograms)
-        ret["scales"] = {"mur": scale, "muf": scale}
+        if scale is not None:
+            # Default to etz
+            ret["scales"] = {"mur": scale, "muf": scale}
 
         # Beautify before dumping
         data = CommentedMap(ret)

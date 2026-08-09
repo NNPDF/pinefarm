@@ -9,6 +9,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from functools import cached_property
 from pathlib import Path
+from typing import Union
 
 import numpy as np
 from yaml import safe_load
@@ -53,9 +54,10 @@ class Histogram:
     name: str
     observable: str
     bins: list
+    grid_name: str = None
     extra_selectors: dict = None
     pineappl: bool = True
-    fac: int = None
+    fac: Union[float, str] = None
     compositions: list[dict] = field(default_factory=list)
 
     def __post_init__(self):
@@ -88,7 +90,8 @@ class Histogram:
         hstr = f"{INDT}{self.observable} > {self.name} {self.bins}"
 
         if self.pineappl:
-            hstr += f" grid={self.name}.pine"
+            grid_name = self.grid_name or self.name
+            hstr += f" grid={grid_name}.pine"
         if self.fac is not None:
             hstr += f" fac={self.fac}"
 
@@ -115,9 +118,10 @@ class Selector:
     observable: str
     min: float = None
     max: float = None
+    action: str = "select"
 
     def to_str(self):  # noqa: D102
-        ret = f"{INDT}select {self.observable} "
+        ret = f"{INDT}{self.action} {self.observable} "
         if self.min is not None:
             ret += f" min = {self.min}"
         if self.max is not None:
@@ -222,14 +226,19 @@ def parse_input_yaml(yaml_path):
 
 
 def _fill_process(process):
-    """Fill process options."""
+    """Fill process block given the metadata for the process."""
     process_name = process["proc"]
     sqrts = process["sqrts"]
-    """Fill process block given the metadata for the process"""
+    jet = process.get("jet", "none[0]")  # Can be None
+    fill_photon = ""
+    if process_name.startswith("G"):
+        fill_photon = f"""
+    photon_isolation = {process['photon_isolation']}
+    photon_fragmentation = {process['photon_fragmentation']}"""
     return f"""
 PROCESS  {process_name}
   collider = pp  sqrts = {sqrts}
-  jet = none[0]
+  jet = {jet}{fill_photon}
   decay_type = 1
 END_PROCESS
 """
@@ -239,6 +248,7 @@ def _fill_run(runname, pdf, mode_line, techcut=1e-7, multi_channel=3):
     """Fil run options."""
     if multi_channel == 0:
         multi_channel = ".false."
+    # Note, scale coefficients need to be set to true to fill the grid
     return f"""
 RUN  {runname.upper()}
   PDF = {pdf}[0]
@@ -268,6 +278,7 @@ def _fill_parameters(theory_parameters):
     return f"""
 PARAMETERS
 {ptext}
+hard_photon_alpha0 = .true. ! only useful for GJ runs
 END_PARAMETERS
 """
 
