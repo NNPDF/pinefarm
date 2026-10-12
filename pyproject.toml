@@ -2,12 +2,7 @@
 name = "pinefarm"
 version = "0.0.0"
 description = "Generate PineAPPL grids from PineCards."
-authors = [
-  "Alessandro Candido <candido.ale@gmail.com>",
-  "Juan Cruz Martinez <juacrumar@lairen.eu>",
-  "Felix Hekhorn <felix.hekhorn@mi.infn.it>",
-  "Christopher Schwan <handgranaten-herbert@posteo.de>",
-]
+authors = ["Pinefarm team"]
 readme = "README.md"
 classifiers = [
   "Programming Language :: Python :: 3",
