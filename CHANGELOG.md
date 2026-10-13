@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased](https://github.com/NNPDF/pinefarm/compare/v0.4.2...HEAD)
 
+### Changed
+- Update `yadism` to 0.13.12 (which decorrelates IHOU) ([#132](https://github.com/NNPDF/pinefarm/pull/132))
+
 ## [0.4.2](https://github.com/NNPDF/pinefarm/compare/v0.4.1...v0.4.2) - 2026-07-09
 
 ### Added
